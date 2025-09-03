@@ -32,7 +32,7 @@ export function WinnerModal({ open, onRestart, winnerName }: WinnerModalProps) {
         {onRestart && (
             <AlertDialogFooter>
                 <Button onClick={onRestart} className="w-full" size="lg">
-                    Jugar de Nuevo
+                    Jugar de Nuevo (Nuevas Tablas)
                 </Button>
             </AlertDialogFooter>
         )}

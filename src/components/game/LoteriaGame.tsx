@@ -228,30 +228,26 @@ export function LoteriaGame({ roomId, playerName }: LoteriaGameProps) {
   
   const resetGame = () => {
     if (!isHost) return;
-    
-    const newRoomData = {
-        gameState: {
-            deck: createDeck(),
-            calledCardIds: [],
-            isGameActive: false,
-            winner: null,
-            host: playerName,
-            timestamp: Date.now()
-        },
-        players: {}
-    };
+    const currentData = readFromStorage(roomId);
+    if(!currentData) return;
 
     // Generate new boards for all existing players
-    Object.keys(allPlayers).forEach(pName => {
-        newRoomData.players[pName] = {
-            ...allPlayers[pName],
-            board: generateBoard(),
-            markedIndices: []
-        };
+    Object.keys(currentData.players).forEach(pName => {
+        currentData.players[pName].board = generateBoard();
+        currentData.players[pName].markedIndices = [];
     });
+    
+    currentData.gameState = {
+        ...currentData.gameState,
+        deck: createDeck(),
+        calledCardIds: [],
+        isGameActive: false,
+        winner: null,
+        timestamp: Date.now()
+    };
 
-    writeToStorage(roomId, newRoomData);
-    setRoomData(newRoomData);
+    writeToStorage(roomId, currentData);
+    setRoomData(currentData);
   };
   
   if (isLoading || !player || !gameState) {
@@ -275,11 +271,11 @@ export function LoteriaGame({ roomId, playerName }: LoteriaGameProps) {
               <>
                 <Button onClick={startGame} disabled={gameState.isGameActive || !!gameState.winner}>
                   <Play className="mr-2" />
-                  Iniciar Juego
+                  {gameState.calledCardIds.length > 0 ? 'Continuar Juego' : 'Iniciar Juego'}
                 </Button>
                 <Button onClick={resetGame} variant="outline">
                   <RotateCw className="mr-2" />
-                  Reiniciar Juego
+                  Reiniciar Sala (Nuevas Tablas)
                 </Button>
               </>
             )}

@@ -24,6 +24,13 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  staticPageGenerationTimeout: 1000,
+  // This is needed to make sure Next.js picks up files in the public directory.
+  devIndicators: {
+    buildActivity: true,
+    buildActivityPosition: 'bottom-right',
+  },
+  reactStrictMode: false, // Recommended to disable for localStorage/useEffect heavy apps
 };
 
 export default nextConfig;
