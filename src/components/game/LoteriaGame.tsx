@@ -4,7 +4,7 @@ import { GameBoard } from "./GameBoard";
 import { DealerDisplay } from "./DealerDisplay";
 import { WinnerModal } from "./WinnerModal";
 import { Button } from "@/components/ui/button";
-import { Card as CardType, generateBoard, createDeck, checkWin, shuffle } from "@/lib/loteria";
+import { Card as CardType, generateBoard, createDeck, checkWin, shuffle, CARDS } from "@/lib/loteria";
 import { Play, RotateCw, Loader2, Users } from "lucide-react";
 import { PlayerList } from "./PlayerList";
 
@@ -34,19 +34,29 @@ const getStorageKey = (roomId: string) => `loteria-room-${roomId}`;
 
 const readFromStorage = (roomId: string) => {
   if (typeof window === 'undefined') return null;
-  const data = localStorage.getItem(getStorageKey(roomId));
-  return data ? JSON.parse(data) : null;
+  try {
+    const data = localStorage.getItem(getStorageKey(roomId));
+    return data ? JSON.parse(data) : null;
+  } catch (error) {
+    console.error("Failed to read from storage", error);
+    return null;
+  }
 };
 
 const writeToStorage = (roomId: string, data: any) => {
     if (typeof window === 'undefined') return;
-    localStorage.setItem(getStorageKey(roomId), JSON.stringify(data));
-    window.dispatchEvent(new Event('storage')); // Notify other tabs
+    try {
+      localStorage.setItem(getStorageKey(roomId), JSON.stringify(data));
+      window.dispatchEvent(new Event('storage')); // Notify other tabs
+    } catch (error) {
+      console.error("Failed to write to storage", error);
+    }
 };
 
 export function LoteriaGame({ roomId, playerName }: LoteriaGameProps) {
   const [player, setPlayer] = useState<PlayerState | null>(null);
   const [roomData, setRoomData] = useState<{ gameState: GameState | null, players: Record<string, PlayerState> } | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   
   const gameState = roomData?.gameState ?? null;
   const allPlayers = roomData?.players ?? {};
@@ -61,6 +71,7 @@ export function LoteriaGame({ roomId, playerName }: LoteriaGameProps) {
             setPlayer(p => ({...p, ...data.players[playerName]}));
         }
     }
+    setIsLoading(false);
   }, [roomId, playerName]);
 
   // Effect for listening to storage changes
@@ -80,7 +91,7 @@ export function LoteriaGame({ roomId, playerName }: LoteriaGameProps) {
     const newPlayerState: PlayerState = {
         name: playerName,
         board: userBoard,
-        markedIndices: [],
+        markedIndices: existingPlayer?.markedIndices || [],
         isOnline: true,
     };
     setPlayer(newPlayerState);
@@ -101,19 +112,34 @@ export function LoteriaGame({ roomId, playerName }: LoteriaGameProps) {
     }
     
     // Add or update player in room
-    currentRoomData.players[playerName] = newPlayerState;
-    if(!currentRoomData.gameState.host) {
-        currentRoomData.gameState.host = playerName;
+    currentRoomData.players[playerName] = {
+        ...currentRoomData.players[playerName],
+        ...newPlayerState
+    };
+
+    if(!currentRoomData.gameState.host || !currentRoomData.players[currentRoomData.gameState.host]?.isOnline) {
+        // Find first online player to be host if current host is offline
+        const onlinePlayer = Object.values(currentRoomData.players).find(p => p.isOnline);
+        currentRoomData.gameState.host = onlinePlayer?.name || playerName;
     }
     
     setRoomData(currentRoomData);
     writeToStorage(roomId, currentRoomData);
+    setIsLoading(false);
+
 
     // Handle leaving
     const handleBeforeUnload = () => {
         const data = readFromStorage(roomId);
         if(data && data.players[playerName]) {
             data.players[playerName].isOnline = false;
+            // If the host is leaving, assign a new host
+            if(data.gameState.host === playerName) {
+                const nextHost = Object.values(data.players).find(p => p.isOnline && p.name !== playerName);
+                if(nextHost) {
+                    data.gameState.host = nextHost.name;
+                }
+            }
             writeToStorage(roomId, data);
         }
     };
@@ -142,7 +168,7 @@ export function LoteriaGame({ roomId, playerName }: LoteriaGameProps) {
           currentData.gameState.calledCardIds.push(nextCard.id);
           currentData.gameState.timestamp = Date.now();
           writeToStorage(roomId, currentData);
-          setRoomData(currentData);
+          setRoomData(currentData); // Update local state to re-render
         } else {
           currentData.gameState.isGameActive = false; // Game over
           writeToStorage(roomId, currentData);
@@ -159,9 +185,19 @@ export function LoteriaGame({ roomId, playerName }: LoteriaGameProps) {
     const currentData = readFromStorage(roomId);
     if(!currentData) return;
 
-    currentData.gameState.isGameActive = true;
-    currentData.gameState.calledCardIds = [currentData.gameState.deck[0].id];
-    currentData.gameState.timestamp = Date.now();
+    // Reset players' marked cards but keep their boards
+    Object.keys(currentData.players).forEach(pName => {
+        currentData.players[pName].markedIndices = [];
+    });
+
+    currentData.gameState = {
+        ...currentData.gameState,
+        deck: createDeck(),
+        calledCardIds: [currentData.gameState.deck[0].id],
+        isGameActive: true,
+        winner: null,
+        timestamp: Date.now()
+    }
     
     writeToStorage(roomId, currentData);
     setRoomData(currentData);
@@ -205,6 +241,7 @@ export function LoteriaGame({ roomId, playerName }: LoteriaGameProps) {
         players: {}
     };
 
+    // Generate new boards for all existing players
     Object.keys(allPlayers).forEach(pName => {
         newRoomData.players[pName] = {
             ...allPlayers[pName],
@@ -217,7 +254,7 @@ export function LoteriaGame({ roomId, playerName }: LoteriaGameProps) {
     setRoomData(newRoomData);
   };
   
-  if (!player || !gameState) {
+  if (isLoading || !player || !gameState) {
     return (
       <div className="flex flex-col gap-4 items-center justify-center h-64">
         <Loader2 className="w-12 h-12 animate-spin text-primary" />
@@ -226,7 +263,7 @@ export function LoteriaGame({ roomId, playerName }: LoteriaGameProps) {
     );
   }
 
-  const calledCards = gameState.calledCardIds.map(id => gameState.deck.find(c => c.id === id)).filter(Boolean) as CardType[];
+  const calledCards = gameState.calledCardIds.map(id => CARDS.find(c => c.id === id)).filter(Boolean) as CardType[];
   const currentCard = calledCards.length > 0 ? calledCards[calledCards.length - 1] : null;
 
   return (
@@ -246,7 +283,7 @@ export function LoteriaGame({ roomId, playerName }: LoteriaGameProps) {
                 </Button>
               </>
             )}
-            {!isHost && (
+            {!isHost && gameState.host && (
               <p className="text-center text-muted-foreground p-2 bg-muted rounded-md">
                 <span className="font-bold">{gameState.host}</span> es el anfitrión. Esperando a que inicie el juego...
               </p>
