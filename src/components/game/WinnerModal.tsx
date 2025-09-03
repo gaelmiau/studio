@@ -12,10 +12,11 @@ import { Button } from "@/components/ui/button";
 
 interface WinnerModalProps {
   open: boolean;
-  onRestart: () => void;
+  winnerName?: string | null;
+  onRestart?: () => void;
 }
 
-export function WinnerModal({ open, onRestart }: WinnerModalProps) {
+export function WinnerModal({ open, onRestart, winnerName }: WinnerModalProps) {
   return (
     <AlertDialog open={open}>
       <AlertDialogContent className="bg-card border-primary">
@@ -24,15 +25,17 @@ export function WinnerModal({ open, onRestart }: WinnerModalProps) {
             ¡¡Lotería!!
           </AlertDialogTitle>
           <AlertDialogDescription className="text-center text-lg text-foreground pt-4">
-            ¡Felicidades, has ganado el juego!
+            ¡Felicidades, <span className="font-bold">{winnerName}</span> ha ganado el juego!
           </AlertDialogDescription>
         </AlertDialogHeader>
         <div className="text-6xl text-center p-4">🎉🎊🥳</div>
-        <AlertDialogFooter>
-          <Button onClick={onRestart} className="w-full" size="lg">
-            Jugar de Nuevo
-          </Button>
-        </AlertDialogFooter>
+        {onRestart && (
+            <AlertDialogFooter>
+                <Button onClick={onRestart} className="w-full" size="lg">
+                    Jugar de Nuevo
+                </Button>
+            </AlertDialogFooter>
+        )}
       </AlertDialogContent>
     </AlertDialog>
   );
