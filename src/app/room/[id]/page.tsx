@@ -1,13 +1,14 @@
 "use client";
 
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useParams } from 'next/navigation';
 import { Header } from "@/components/Header";
 import { LoteriaGame } from "@/components/game/LoteriaGame";
 
-export default function RoomPage({ params }: { params: { id: string } }) {
+export default function RoomPage() {
   const searchParams = useSearchParams();
+  const params = useParams();
   const name = searchParams.get('name');
-  const roomId = params.id;
+  const roomId = params.id as string;
 
   if (!name) {
     // This could be a redirect to home page in a real app
