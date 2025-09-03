@@ -11,7 +11,7 @@ const firebaseConfig = {
   authDomain: "websockets-lotera.firebaseapp.com",
   measurementId: "",
   messagingSenderId: "470702658375",
-  databaseURL: "https://websockets-lotera-default-rtdb.firebaseio.com"
+  databaseURL: "https://websockets-lotera-default-rtdb.us-central1.firebasedatabase.app"
 };
 
 // Initialize Firebase
