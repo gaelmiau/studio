@@ -1,7 +1,5 @@
 "use client";
 import React, { useState, useEffect, useCallback } from "react";
-import { ref, onValue, set, get, update, onDisconnect } from "firebase/database";
-import { database } from "@/lib/firebase";
 import { GameBoard } from "./GameBoard";
 import { DealerDisplay } from "./DealerDisplay";
 import { WinnerModal } from "./WinnerModal";
@@ -31,159 +29,192 @@ interface PlayerState {
   isOnline: boolean;
 }
 
+// Helper to get data from localStorage
+const getStorageKey = (roomId: string) => `loteria-room-${roomId}`;
+
+const readFromStorage = (roomId: string) => {
+  if (typeof window === 'undefined') return null;
+  const data = localStorage.getItem(getStorageKey(roomId));
+  return data ? JSON.parse(data) : null;
+};
+
+const writeToStorage = (roomId: string, data: any) => {
+    if (typeof window === 'undefined') return;
+    localStorage.setItem(getStorageKey(roomId), JSON.stringify(data));
+    window.dispatchEvent(new Event('storage')); // Notify other tabs
+};
+
 export function LoteriaGame({ roomId, playerName }: LoteriaGameProps) {
   const [player, setPlayer] = useState<PlayerState | null>(null);
-  const [gameState, setGameState] = useState<GameState | null>(null);
-  const [allPlayers, setAllPlayers] = useState<Record<string, PlayerState>>({});
+  const [roomData, setRoomData] = useState<{ gameState: GameState | null, players: Record<string, PlayerState> } | null>(null);
   
+  const gameState = roomData?.gameState ?? null;
+  const allPlayers = roomData?.players ?? {};
+
   const isHost = gameState?.host === playerName;
 
-  // Refs to Firebase
-  const roomRef = ref(database, `rooms/${roomId}`);
-  const playerRef = ref(database, `rooms/${roomId}/players/${playerName}`);
-  const gameStateRef = ref(database, `rooms/${roomId}/gameState`);
-  const presenceRef = ref(database, `.info/connected`);
+  const updateRoomData = useCallback(() => {
+    const data = readFromStorage(roomId);
+    if(data) {
+        setRoomData(data);
+        if (data.players && data.players[playerName]) {
+            setPlayer(p => ({...p, ...data.players[playerName]}));
+        }
+    }
+  }, [roomId, playerName]);
 
-  // Effect for handling player connection and disconnection
+  // Effect for listening to storage changes
   useEffect(() => {
-    const onConnected = onValue(presenceRef, async (snap) => {
-      if (snap.val() === true) {
-        await set(playerRef, player);
-        onDisconnect(playerRef).update({ isOnline: false });
-      }
-    });
+    if(typeof window === 'undefined') return;
+    window.addEventListener('storage', updateRoomData);
+    return () => window.removeEventListener('storage', updateRoomData);
+  }, [updateRoomData]);
 
-    return () => {
-      onDisconnect(playerRef).cancel();
-      onConnected();
-    };
-  }, [player, playerRef, presenceRef]);
-
-  // Effect for joining the room and initializing player state
+  // Initial setup
   useEffect(() => {
-    get(playerRef).then(snap => {
-      let userBoard: CardType[];
-      if (snap.exists() && snap.val().board) {
-        userBoard = snap.val().board;
-      } else {
-        userBoard = generateBoard();
-      }
-      const initialPlayerState = {
+    let currentRoomData = readFromStorage(roomId);
+    
+    // Initialize player
+    const existingPlayer = currentRoomData?.players?.[playerName];
+    const userBoard = existingPlayer?.board || generateBoard();
+    const newPlayerState: PlayerState = {
         name: playerName,
         board: userBoard,
         markedIndices: [],
         isOnline: true,
-      };
-      setPlayer(initialPlayerState);
-      set(playerRef, initialPlayerState);
-    });
-  }, [roomId, playerName]); // Should only run once
+    };
+    setPlayer(newPlayerState);
 
-
-  // Effect for syncing game state and players
-  useEffect(() => {
-    const unsubscribe = onValue(roomRef, (snapshot) => {
-      const roomData = snapshot.val();
-      if (roomData) {
-        setGameState(roomData.gameState || null);
-        setAllPlayers(roomData.players || {});
-        
-        // Update local player state from Firebase
-        if(roomData.players && roomData.players[playerName]) {
-          setPlayer(p => ({...p, ...roomData.players[playerName]}));
+    // Initialize room if it doesn't exist
+    if (!currentRoomData) {
+        currentRoomData = {
+            gameState: {
+                deck: createDeck(),
+                calledCardIds: [],
+                isGameActive: false,
+                winner: null,
+                host: playerName,
+                timestamp: Date.now()
+            },
+            players: {}
         }
-      }
-    });
-    return () => unsubscribe();
+    }
+    
+    // Add or update player in room
+    currentRoomData.players[playerName] = newPlayerState;
+    if(!currentRoomData.gameState.host) {
+        currentRoomData.gameState.host = playerName;
+    }
+    
+    setRoomData(currentRoomData);
+    writeToStorage(roomId, currentRoomData);
+
+    // Handle leaving
+    const handleBeforeUnload = () => {
+        const data = readFromStorage(roomId);
+        if(data && data.players[playerName]) {
+            data.players[playerName].isOnline = false;
+            writeToStorage(roomId, data);
+        }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+        window.removeEventListener('beforeunload', handleBeforeUnload);
+        // To simulate disconnection, we'll mark as offline.
+        handleBeforeUnload();
+    };
   }, [roomId, playerName]);
 
-  // Effect to determine host on join
-  useEffect(() => {
-    get(gameStateRef).then((snapshot) => {
-      if (!snapshot.exists()) {
-        const initialGameState: GameState = {
-          deck: createDeck(),
-          calledCardIds: [],
-          isGameActive: false,
-          winner: null,
-          host: playerName,
-          timestamp: Date.now()
-        };
-        set(gameStateRef, initialGameState);
-      }
-    });
-  }, [isHost, playerName, gameStateRef]);
-
-  const startGame = () => {
-    if (!isHost || !gameState) return;
-    const newGameState: Partial<GameState> = {
-        isGameActive: true,
-        calledCardIds: [gameState.deck[0].id],
-        timestamp: Date.now()
-    };
-    update(gameStateRef, newGameState);
-  };
-  
-  const callNextCard = useCallback(() => {
-    if (!isHost || !gameState || !gameState.isGameActive || gameState.winner) return;
-
-    if (gameState.calledCardIds.length < gameState.deck.length) {
-      const nextCard = gameState.deck[gameState.calledCardIds.length];
-      const newCalledCardIds = [...gameState.calledCardIds, nextCard.id];
-      update(gameStateRef, { calledCardIds: newCalledCardIds, timestamp: Date.now() });
-    } else {
-      update(gameStateRef, { isGameActive: false }); // Game over
-    }
-  },[isHost, gameState, gameStateRef]);
-
-
+  // Main game loop for host
   useEffect(() => {
     if (isHost && gameState?.isGameActive && !gameState.winner) {
-      const gameInterval = setInterval(callNextCard, 4000);
+      const gameInterval = setInterval(() => {
+        const currentData = readFromStorage(roomId);
+        if(!currentData || !currentData.gameState.isGameActive || currentData.gameState.winner) {
+            clearInterval(gameInterval);
+            return;
+        }
+
+        const { deck, calledCardIds } = currentData.gameState;
+        if (calledCardIds.length < deck.length) {
+          const nextCard = deck[calledCardIds.length];
+          currentData.gameState.calledCardIds.push(nextCard.id);
+          currentData.gameState.timestamp = Date.now();
+          writeToStorage(roomId, currentData);
+          setRoomData(currentData);
+        } else {
+          currentData.gameState.isGameActive = false; // Game over
+          writeToStorage(roomId, currentData);
+          setRoomData(currentData);
+        }
+      }, 4000);
       return () => clearInterval(gameInterval);
     }
-  }, [isHost, gameState?.isGameActive, gameState?.winner, callNextCard]);
+  }, [isHost, gameState?.isGameActive, gameState?.winner, roomId]);
 
 
+  const startGame = () => {
+    if (!isHost) return;
+    const currentData = readFromStorage(roomId);
+    if(!currentData) return;
+
+    currentData.gameState.isGameActive = true;
+    currentData.gameState.calledCardIds = [currentData.gameState.deck[0].id];
+    currentData.gameState.timestamp = Date.now();
+    
+    writeToStorage(roomId, currentData);
+    setRoomData(currentData);
+  };
+  
   const handleCardClick = (card: CardType, index: number) => {
-    if (!player || gameState?.winner || !gameState?.calledCardIds) return;
+    const currentData = readFromStorage(roomId);
+    if (!currentData || !player || currentData.gameState.winner || !currentData.gameState.calledCardIds) return;
 
-    const isCalled = gameState.calledCardIds.includes(card.id);
+    const { calledCardIds } = currentData.gameState;
+    const isCalled = calledCardIds.includes(card.id);
+
     if (isCalled && !player.markedIndices.includes(index)) {
       const newMarkedIndices = [...player.markedIndices, index].sort((a, b) => a - b);
       
       const updatedPlayer = { ...player, markedIndices: newMarkedIndices };
-      setPlayer(updatedPlayer); // Optimistic update
-      set(playerRef, updatedPlayer);
-
+      currentData.players[playerName] = updatedPlayer;
+      setPlayer(updatedPlayer);
 
       if (checkWin(newMarkedIndices)) {
-        update(gameStateRef, { winner: playerName, isGameActive: false });
+        currentData.gameState.winner = playerName;
+        currentData.gameState.isGameActive = false;
       }
+      writeToStorage(roomId, currentData);
+      setRoomData(currentData);
     }
   };
   
   const resetGame = () => {
     if (!isHost) return;
     
-    // New game state
-    const newGameState: GameState = {
-      deck: createDeck(),
-      calledCardIds: [],
-      isGameActive: false,
-      winner: null,
-      host: playerName,
-      timestamp: Date.now()
+    const newRoomData = {
+        gameState: {
+            deck: createDeck(),
+            calledCardIds: [],
+            isGameActive: false,
+            winner: null,
+            host: playerName,
+            timestamp: Date.now()
+        },
+        players: {}
     };
-    set(gameStateRef, newGameState);
 
-    // Reset all players
-    const updates: Record<string, any> = {};
     Object.keys(allPlayers).forEach(pName => {
-      updates[`/rooms/${roomId}/players/${pName}/markedIndices`] = [];
-      updates[`/rooms/${roomId}/players/${pName}/board`] = generateBoard();
+        newRoomData.players[pName] = {
+            ...allPlayers[pName],
+            board: generateBoard(),
+            markedIndices: []
+        };
     });
-    update(ref(database), updates);
+
+    writeToStorage(roomId, newRoomData);
+    setRoomData(newRoomData);
   };
   
   if (!player || !gameState) {
