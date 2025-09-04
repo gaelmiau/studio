@@ -157,7 +157,7 @@ export function LoteriaGame({ roomId, playerName }: LoteriaGameProps) {
             data.players[playerName].isOnline = false;
             // If the host is leaving, assign a new host
             if(data.gameState.host === playerName) {
-                const nextHost = Object.values(data.players).find((p: PlayerState) => p.isOnline && p.name !== playerName);
+                const nextHost = Object.values(data.players).find((p: any) => p.isOnline && p.name !== playerName);
                 if(nextHost) {
                     data.gameState.host = nextHost.name;
                 } else {
@@ -204,11 +204,23 @@ export function LoteriaGame({ roomId, playerName }: LoteriaGameProps) {
     }
   }, [isHost, gameState?.isGameActive, gameState?.winner, roomId]);
 
+  const cleanupInactivePlayers = (currentData: any) => {
+    const activePlayers: Record<string, PlayerState> = {};
+    Object.keys(currentData.players).forEach(pName => {
+        if (currentData.players[pName].isOnline) {
+            activePlayers[pName] = currentData.players[pName];
+        }
+    });
+    currentData.players = activePlayers;
+    return currentData;
+  }
 
   const startGame = () => {
     if (!isHost) return;
-    const currentData = readFromStorage(roomId);
+    let currentData = readFromStorage(roomId);
     if(!currentData) return;
+
+    currentData = cleanupInactivePlayers(currentData);
 
     // Reset players' marked cards but keep their boards for this round
     Object.keys(currentData.players).forEach(pName => {
@@ -253,8 +265,10 @@ export function LoteriaGame({ roomId, playerName }: LoteriaGameProps) {
   
   const resetGame = () => {
     if (!isHost) return;
-    const currentData = readFromStorage(roomId);
+    let currentData = readFromStorage(roomId);
     if(!currentData) return;
+
+    currentData = cleanupInactivePlayers(currentData);
 
     // Generate new boards for all existing players
     Object.keys(currentData.players).forEach(pName => {
