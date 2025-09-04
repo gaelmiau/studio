@@ -111,7 +111,8 @@ export function LoteriaGame({ roomId, playerName }: LoteriaGameProps) {
       userBoard = generateBoard();
     } else {
       // Otherwise, use existing board or generate a new one.
-      userBoard = existingPlayer?.board || generateBoard();
+      // Defensive check: if board is missing for an existing player, generate a new one.
+      userBoard = existingPlayer?.board && existingPlayer.board.length > 0 ? existingPlayer.board : generateBoard();
       // If player existed, restore their marks.
       userMarkedIndices = existingPlayer?.markedIndices || [];
     }
@@ -289,7 +290,7 @@ export function LoteriaGame({ roomId, playerName }: LoteriaGameProps) {
     setRoomData(currentData);
   };
   
-  if (isLoading || !player || !gameState) {
+  if (isLoading || !player || !gameState || !player.board) {
     return (
       <div className="flex flex-col gap-4 items-center justify-center h-64">
         <Loader2 className="w-12 h-12 animate-spin text-primary" />
