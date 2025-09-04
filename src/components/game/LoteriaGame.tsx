@@ -57,6 +57,7 @@ export function LoteriaGame({ roomId, playerName }: LoteriaGameProps) {
   const [player, setPlayer] = useState<PlayerState | null>(null);
   const [roomData, setRoomData] = useState<{ gameState: GameState | null, players: Record<string, PlayerState> } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isClient, setIsClient] = useState(false);
   
   const gameState = roomData?.gameState ?? null;
   const allPlayers = roomData?.players ?? {};
@@ -290,6 +291,12 @@ export function LoteriaGame({ roomId, playerName }: LoteriaGameProps) {
     setRoomData(currentData);
   };
   
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (!isClient) return null;
+
   if (isLoading || !player || !gameState || !player.board) {
     return (
       <div className="flex flex-col gap-4 items-center justify-center h-64">
@@ -301,11 +308,20 @@ export function LoteriaGame({ roomId, playerName }: LoteriaGameProps) {
 
   const calledCards = gameState.calledCardIds.map(id => CARDS.find(c => c.id === id)).filter(Boolean) as CardType[];
   const currentCard = calledCards.length > 0 ? calledCards[calledCards.length - 1] : null;
+  const uniqueHistory = calledCards.filter(
+    (card, index, self) => self.findIndex(c => c.id === card.id) === index
+  );
+
+  console.log("Render LoteriaGame", { host: gameState?.host, allPlayers });
 
   return (
     <div className="flex flex-col lg:flex-row gap-6 items-start">
       <div className="w-full lg:w-1/4">
-        <PlayerList players={allPlayers} currentPlayerName={playerName} hostName={gameState.host} />
+        <PlayerList
+          players={allPlayers}
+          currentPlayerName={playerName}
+          hostName={gameState.host || ""}
+        />
         <div className="mt-4 flex flex-col gap-2">
             {isHost && (
               <>
@@ -321,14 +337,14 @@ export function LoteriaGame({ roomId, playerName }: LoteriaGameProps) {
             )}
             {!isHost && gameState.host && !gameState.isGameActive && !gameState.winner &&(
               <p className="text-center text-muted-foreground p-2 bg-muted rounded-md">
-                <span className="font-bold">{gameState.host}</span> es el anfitrión. Esperando a que inicie el juego...
+                <span className="font-bold">{gameState.host || "Anfitrión"}</span> es el anfitrión. Esperando a que inicie el juego...
               </p>
             )}
         </div>
       </div>
       
       <div className="w-full lg:w-3/4 flex flex-col gap-6 items-center">
-        <DealerDisplay currentCard={currentCard} history={calledCards.slice(0, -1)} />
+        <DealerDisplay currentCard={currentCard} history={uniqueHistory.slice(0, -1)} />
         
         <div className="w-full max-w-2xl mx-auto">
           <h2 className="text-center text-2xl font-headline mb-4">Tu Tabla</h2>
