@@ -4,8 +4,8 @@ import { GameBoard } from "./GameBoard";
 import { DealerDisplay } from "./DealerDisplay";
 import { WinnerModal } from "./WinnerModal";
 import { Button } from "@/components/ui/button";
-import { Card as CardType, generateBoard, createDeck, checkWin, shuffle, CARDS } from "@/lib/loteria";
-import { Play, RotateCw, Loader2, Users } from "lucide-react";
+import { Card as CardType, generateBoard, createDeck, checkWin, CARDS } from "@/lib/loteria";
+import { Play, RotateCw, Loader2 } from "lucide-react";
 import { PlayerList } from "./PlayerList";
 
 interface LoteriaGameProps {
@@ -60,7 +60,6 @@ export function LoteriaGame({ roomId, playerName }: LoteriaGameProps) {
   
   const gameState = roomData?.gameState ?? null;
   const allPlayers = roomData?.players ?? {};
-
   const isHost = gameState?.host === playerName;
 
   const updateRoomData = useCallback(() => {
@@ -83,19 +82,9 @@ export function LoteriaGame({ roomId, playerName }: LoteriaGameProps) {
 
   // Initial setup
   useEffect(() => {
+    setIsLoading(true);
     let currentRoomData = readFromStorage(roomId);
     
-    // Initialize player
-    const existingPlayer = currentRoomData?.players?.[playerName];
-    const userBoard = existingPlayer?.board || generateBoard();
-    const newPlayerState: PlayerState = {
-        name: playerName,
-        board: userBoard,
-        markedIndices: existingPlayer?.markedIndices || [],
-        isOnline: true,
-    };
-    setPlayer(newPlayerState);
-
     // Initialize room if it doesn't exist
     if (!currentRoomData) {
         currentRoomData = {
@@ -108,17 +97,50 @@ export function LoteriaGame({ roomId, playerName }: LoteriaGameProps) {
                 timestamp: Date.now()
             },
             players: {}
-        }
+        };
     }
-    
+
+    // Smart logic for joining an existing room
+    const existingPlayer = currentRoomData.players?.[playerName];
+    let userBoard: CardType[];
+    let userMarkedIndices: number[] = [];
+
+    // If the game has a winner, we assume the user wants to join a new game.
+    // We give them a new board and reset their marks.
+    if (currentRoomData.gameState.winner && !existingPlayer) {
+      userBoard = generateBoard();
+    } else {
+      // Otherwise, use existing board or generate a new one.
+      userBoard = existingPlayer?.board || generateBoard();
+      // If player existed, restore their marks.
+      userMarkedIndices = existingPlayer?.markedIndices || [];
+    }
+
+    const newPlayerState: PlayerState = {
+        name: playerName,
+        board: userBoard,
+        markedIndices: userMarkedIndices,
+        isOnline: true,
+    };
+    setPlayer(newPlayerState);
+
     // Add or update player in room
     currentRoomData.players[playerName] = {
         ...currentRoomData.players[playerName],
         ...newPlayerState
     };
+    
+    // If the user is joining a room that already has a winner, we clear the winner
+    // to allow a new game to start. The host can then press "Start Game".
+    if(currentRoomData.gameState.winner){
+      currentRoomData.gameState.winner = null;
+      currentRoomData.gameState.isGameActive = false;
+    }
 
-    if(!currentRoomData.gameState.host || !currentRoomData.players[currentRoomData.gameState.host]?.isOnline) {
-        // Find first online player to be host if current host is offline
+    // Host assignment logic
+    const host = currentRoomData.gameState.host;
+    const hostIsOffline = !host || !currentRoomData.players[host]?.isOnline;
+    if (hostIsOffline) {
         const onlinePlayer = Object.values(currentRoomData.players).find(p => p.isOnline);
         currentRoomData.gameState.host = onlinePlayer?.name || playerName;
     }
@@ -135,9 +157,12 @@ export function LoteriaGame({ roomId, playerName }: LoteriaGameProps) {
             data.players[playerName].isOnline = false;
             // If the host is leaving, assign a new host
             if(data.gameState.host === playerName) {
-                const nextHost = Object.values(data.players).find(p => p.isOnline && p.name !== playerName);
+                const nextHost = Object.values(data.players).find((p: PlayerState) => p.isOnline && p.name !== playerName);
                 if(nextHost) {
                     data.gameState.host = nextHost.name;
+                } else {
+                    // if no one is left, reset game state
+                    data.gameState.isGameActive = false;
                 }
             }
             writeToStorage(roomId, data);
@@ -185,7 +210,7 @@ export function LoteriaGame({ roomId, playerName }: LoteriaGameProps) {
     const currentData = readFromStorage(roomId);
     if(!currentData) return;
 
-    // Reset players' marked cards but keep their boards
+    // Reset players' marked cards but keep their boards for this round
     Object.keys(currentData.players).forEach(pName => {
         currentData.players[pName].markedIndices = [];
     });
@@ -193,7 +218,7 @@ export function LoteriaGame({ roomId, playerName }: LoteriaGameProps) {
     currentData.gameState = {
         ...currentData.gameState,
         deck: createDeck(),
-        calledCardIds: [currentData.gameState.deck[0].id],
+        calledCardIds: [createDeck()[0].id], // Start with one card
         isGameActive: true,
         winner: null,
         timestamp: Date.now()
@@ -279,7 +304,7 @@ export function LoteriaGame({ roomId, playerName }: LoteriaGameProps) {
                 </Button>
               </>
             )}
-            {!isHost && gameState.host && (
+            {!isHost && gameState.host && !gameState.isGameActive && !gameState.winner &&(
               <p className="text-center text-muted-foreground p-2 bg-muted rounded-md">
                 <span className="font-bold">{gameState.host}</span> es el anfitrión. Esperando a que inicie el juego...
               </p>
