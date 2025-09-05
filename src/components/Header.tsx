@@ -6,7 +6,7 @@ export function Header() {
       <div className="container mx-auto flex items-center justify-center gap-4">
         <AztecSunIcon className="w-8 h-8 md:w-10 md:h-10 text-primary animate-spin [animation-duration:15s]" />
         <h1 className="text-3xl md:text-5xl font-headline font-bold text-center tracking-tight text-primary-foreground">
-          Lotería Online
+          Lotería Seguridad de la Información
         </h1>
         <AztecSunIcon className="w-8 h-8 md:w-10 md:h-10 text-primary animate-spin [animation-duration:15s] [animation-direction:reverse]" />
       </div>

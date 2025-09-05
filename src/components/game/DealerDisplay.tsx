@@ -21,15 +21,15 @@ export function DealerDisplay({ currentCard, history }: DealerDisplayProps) {
               <Image
                 src={currentCard.imageUrl}
                 alt={currentCard.name}
-                data-ai-hint={currentCard.hint}
                 fill
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 className="object-cover"
                 priority
               />
-              <div className="absolute bottom-0 w-full bg-black/60 p-2 text-center">
+              {/* Elimina este bloque para quitar la leyenda */}
+              {/* <div className="absolute bottom-0 w-full bg-black/60 p-2 text-center">
                 <p className="font-bold text-white text-lg">{currentCard.name}</p>
-              </div>
+              </div> */}
             </div>
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-muted/50">
@@ -51,14 +51,10 @@ export function DealerDisplay({ currentCard, history }: DealerDisplayProps) {
                       <Image
                         src={card.imageUrl}
                         alt={card.name}
-                        data-ai-hint={card.hint}
-                        fill
-                        sizes="100px"
+                        width={100}
+                        height={140}
                         className="object-cover"
                       />
-                      <div className="absolute bottom-0 w-full bg-black/50 py-0.5 text-center">
-                        <p className="font-bold text-white text-[8px] sm:text-[10px] truncate">{card.name}</p>
-                      </div>
                     </div>
                   ))}
                 </div>

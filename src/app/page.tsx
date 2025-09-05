@@ -17,6 +17,20 @@ export default function Home() {
   const handleJoinRoom = (e: React.FormEvent) => {
     e.preventDefault();
     if (name.trim() && room.trim()) {
+      // Validación: revisa si el nombre ya existe en la sala
+      const storageKey = `loteria-room-${room.trim()}`;
+      const roomDataStr = typeof window !== "undefined" ? localStorage.getItem(storageKey) : null;
+      if (roomDataStr) {
+        try {
+          const roomData = JSON.parse(roomDataStr);
+          if (roomData.players && roomData.players[name.trim()]) {
+            alert("Ya existe un jugador con ese nombre en la sala. Elige otro.");
+            return;
+          }
+        } catch (err) {
+          // Si hay error al leer, permite el ingreso
+        }
+      }
       router.push(`/room/${room}?name=${encodeURIComponent(name.trim())}`);
     }
   };
