@@ -41,7 +41,9 @@ export function PlayerList({ players, currentPlayerName, hostName }: PlayerListP
                 </span>
               </div>
               {player.name === hostName && (
-                <Crown className="w-5 h-5 text-yellow-500" title="Anfitrión" />
+                <Crown className="w-5 h-5 text-yellow-500">
+                  <title>Anfitrión</title>
+                </Crown>
               )}
             </li>
           ))}

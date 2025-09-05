@@ -15,7 +15,7 @@ export function DealerDisplay({ currentCard, history }: DealerDisplayProps) {
     <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
       <div className="md:col-span-1">
         <h3 className="font-headline text-xl text-center mb-2">Carta Actual</h3>
-        <Card className="aspect-[3/4.2] w-full max-w-xs mx-auto overflow-hidden shadow-lg border-2 border-primary bg-card">
+        <Card className="aspect-[3/4.2] w-full max-w-xs mx-auto overflow-hidden border-2 border-primary bg-card">
           {currentCard ? (
             <div className="relative w-full h-full">
               <Image
@@ -46,8 +46,8 @@ export function DealerDisplay({ currentCard, history }: DealerDisplayProps) {
             <ScrollArea className="h-48 md:h-[22rem] w-full">
               {history.length > 0 ? (
                 <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-4 lg:grid-cols-6 gap-2 p-2">
-                  {[...history].reverse().map((card) => (
-                    <div key={card.id} className="aspect-[3/4.2] relative rounded-md overflow-hidden border border-border shadow-sm">
+                  {[...history].reverse().map((card, idx) => (
+                    <div key={`${card.id}-${idx}`} className="aspect-[3/4.2] relative rounded-md overflow-hidden border border-border">
                       <Image
                         src={card.imageUrl}
                         alt={card.name}
@@ -56,15 +56,15 @@ export function DealerDisplay({ currentCard, history }: DealerDisplayProps) {
                         sizes="100px"
                         className="object-cover"
                       />
-                       <div className="absolute bottom-0 w-full bg-black/50 py-0.5 text-center">
-                         <p className="font-bold text-white text-[8px] sm:text-[10px]">{card.name}</p>
-                       </div>
+                      <div className="absolute bottom-0 w-full bg-black/50 py-0.5 text-center">
+                        <p className="font-bold text-white text-[8px] sm:text-[10px] truncate">{card.name}</p>
+                      </div>
                     </div>
                   ))}
                 </div>
               ) : (
                 <div className="flex items-center justify-center h-full">
-                    <p className="text-muted-foreground text-sm">El historial de cartas aparecerá aquí.</p>
+                  <p className="text-muted-foreground text-sm">El historial de cartas aparecerá aquí.</p>
                 </div>
               )}
               <ScrollBar orientation="vertical" />

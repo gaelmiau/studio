@@ -88,11 +88,14 @@ export function createDeck(): Card[] {
  * @param markedIndices The indices of the marked cards (0-15).
  * @returns True if a winning pattern is met, false otherwise.
  */
-export function checkWin(markedIndices: number[]): boolean {
-  if (markedIndices.length < 4) {
-    return false;
-  }
-  return WINNING_PATTERNS.some(pattern =>
-    pattern.every(index => markedIndices.includes(index))
+export function checkWin(
+  markedIndices: number[],
+  board: Card[],
+  calledCardIds: number[]
+): boolean {
+  // Todas las cartas marcadas deben estar en las llamadas y deben ser 16
+  return (
+    markedIndices.length === 16 &&
+    markedIndices.every(idx => calledCardIds.includes(board[idx].id))
   );
 }

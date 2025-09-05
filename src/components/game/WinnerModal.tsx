@@ -12,11 +12,11 @@ import { Button } from "@/components/ui/button";
 
 interface WinnerModalProps {
   open: boolean;
-  winnerName?: string | null;
+  ranking: { name: string; seleccionadas: number }[];
   onRestart?: () => void;
 }
 
-export function WinnerModal({ open, onRestart, winnerName }: WinnerModalProps) {
+export function WinnerModal({ open, onRestart, ranking }: WinnerModalProps) {
   return (
     <AlertDialog open={open}>
       <AlertDialogContent className="bg-card border-primary">
@@ -24,17 +24,29 @@ export function WinnerModal({ open, onRestart, winnerName }: WinnerModalProps) {
           <AlertDialogTitle className="text-4xl font-headline text-primary text-center">
             ¡¡Lotería!!
           </AlertDialogTitle>
-          <AlertDialogDescription className="text-center text-lg text-foreground pt-4">
-            ¡Felicidades, <span className="font-bold">{winnerName}</span> ha ganado el juego!
+          <AlertDialogDescription asChild>
+            <div className="text-center text-lg text-foreground pt-4">
+              <div className="mb-2">Ranking final:</div>
+              <ol className="space-y-1">
+                {ranking.slice(0, 3).map((p, idx) => (
+                  <li key={p.name} className="font-bold">
+                    {idx === 0 && "🥇"}
+                    {idx === 1 && "🥈"}
+                    {idx === 2 && "🥉"}
+                    {` ${p.name} (${p.seleccionadas} cartas)`}
+                  </li>
+                ))}
+              </ol>
+            </div>
           </AlertDialogDescription>
         </AlertDialogHeader>
         <div className="text-6xl text-center p-4">🎉🎊🥳</div>
         {onRestart && (
-            <AlertDialogFooter>
-                <Button onClick={onRestart} className="w-full" size="lg">
-                    Jugar de Nuevo (Nuevas Tablas)
-                </Button>
-            </AlertDialogFooter>
+          <AlertDialogFooter>
+            <Button onClick={onRestart} className="w-full" size="lg">
+              Jugar de Nuevo (Nuevas Tablas)
+            </Button>
+          </AlertDialogFooter>
         )}
       </AlertDialogContent>
     </AlertDialog>
