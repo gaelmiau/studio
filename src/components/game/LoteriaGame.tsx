@@ -1,330 +1,129 @@
 "use client";
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { GameBoard } from "./GameBoard";
 import { DealerDisplay } from "./DealerDisplay";
 import { WinnerModal } from "./WinnerModal";
 import { Button } from "@/components/ui/button";
 import { Card as CardType, generateBoard, createDeck, checkWin, CARDS } from "@/lib/loteria";
-import { Play, RotateCw, Loader2 } from "lucide-react";
+import { Play, RotateCw } from "lucide-react";
 import { PlayerList } from "./PlayerList";
+import { updateRoom } from "@/lib/firebaseRoom";
 
 interface LoteriaGameProps {
   roomId: string;
   playerName: string;
+  roomData: any;
 }
 
-interface GameState {
-  deck: CardType[];
-  calledCardIds: number[];
-  isGameActive: boolean;
-  winner?: string | null;
-  host: string;
-  timestamp: number;
-}
-
-interface PlayerState {
-  name: string;
-  board: CardType[];
-  markedIndices: number[];
-  isOnline: boolean;
-}
-
-// Helper to get data from localStorage
-const getStorageKey = (roomId: string) => `loteria-room-${roomId}`;
-
-const readFromStorage = (roomId: string) => {
-  if (typeof window === 'undefined') return null;
-  try {
-    const data = localStorage.getItem(getStorageKey(roomId));
-    return data ? JSON.parse(data) : null;
-  } catch (error) {
-    console.error("Failed to read from storage", error);
-    return null;
-  }
-};
-
-const writeToStorage = (roomId: string, data: any) => {
-  if (typeof window === 'undefined') return;
-  try {
-    localStorage.setItem(getStorageKey(roomId), JSON.stringify(data));
-    window.dispatchEvent(new Event('storage')); // Notify other tabs
-  } catch (error) {
-    console.error("Failed to write to storage", error);
-  }
-};
-
-export function LoteriaGame({ roomId, playerName }: LoteriaGameProps) {
-  const [player, setPlayer] = useState<PlayerState | null>(null);
-  const [roomData, setRoomData] = useState<{ gameState: GameState | null, players: Record<string, PlayerState> } | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isClient, setIsClient] = useState(false);
+export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) {
   const [ranking, setRanking] = useState<{ name: string; seleccionadas: number }[]>([]);
 
   const gameState = roomData?.gameState ?? null;
   const allPlayers = roomData?.players ?? {};
+  const player = allPlayers[playerName];
   const isHost = gameState?.host === playerName;
 
-  const updateRoomData = useCallback(() => {
-    const data = readFromStorage(roomId);
-    if (data) {
-      setRoomData(data);
-      if (data.players && data.players[playerName]) {
-        setPlayer(p => ({ ...p, ...data.players[playerName] }));
-      }
-    }
-    setIsLoading(false);
-  }, [roomId, playerName]);
-
-  // Effect for listening to storage changes
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    window.addEventListener('storage', updateRoomData);
-    return () => window.removeEventListener('storage', updateRoomData);
-  }, [updateRoomData]);
-
-  // Initial setup
-  useEffect(() => {
-    setIsLoading(true);
-    let currentRoomData = readFromStorage(roomId);
-
-    // Initialize room if it doesn't exist
-    if (!currentRoomData) {
-      currentRoomData = {
-        gameState: {
-          deck: createDeck(),
-          calledCardIds: [],
-          isGameActive: false,
-          winner: null,
-          host: playerName,
-          timestamp: Date.now()
-        },
-        players: {}
-      };
-    }
-
-    // Smart logic for joining an existing room
-    const existingPlayer = currentRoomData.players?.[playerName];
-    let userBoard: CardType[];
-    let userMarkedIndices: number[] = [];
-
-    // If the game has a winner, we assume the user wants to join a new game.
-    // We give them a new board and reset their marks.
-    if (currentRoomData.gameState.winner && !existingPlayer) {
-      userBoard = generateBoard();
-    } else {
-      // Otherwise, use existing board or generate a new one.
-      userBoard = existingPlayer?.board && existingPlayer.board.length > 0 ? existingPlayer.board : generateBoard();
-      userMarkedIndices = existingPlayer?.markedIndices || [];
-    }
-
-    const newPlayerState: PlayerState = {
-      name: playerName,
-      board: userBoard,
-      markedIndices: userMarkedIndices,
-      isOnline: true,
-    };
-    setPlayer(newPlayerState);
-
-    // Add or update player in room
-    currentRoomData.players[playerName] = {
-      ...currentRoomData.players[playerName],
-      ...newPlayerState
-    };
-
-    // If the user is joining a room that already has a winner, we clear the winner
-    // to allow a new game to start. The host can then press "Start Game".
-    if (currentRoomData.gameState.winner) {
-      currentRoomData.gameState.winner = null;
-      currentRoomData.gameState.isGameActive = false;
-    }
-
-    // Host assignment logic
-    const host = currentRoomData.gameState.host;
-    const hostIsOffline = !host || !currentRoomData.players[host]?.isOnline;
-    if (hostIsOffline) {
-      const onlinePlayer = Object.values(currentRoomData.players).find(p => p.isOnline);
-      currentRoomData.gameState.host = onlinePlayer?.name || playerName;
-    }
-
-    setRoomData(currentRoomData);
-    writeToStorage(roomId, currentRoomData);
-    setIsLoading(false);
-
-    // Handle leaving
-    const handleBeforeUnload = () => {
-      const data = readFromStorage(roomId);
-      if (data && data.players[playerName]) {
-        data.players[playerName].isOnline = false;
-        // If the host is leaving, assign a new host
-        if (data.gameState.host === playerName) {
-          const nextHost = Object.values(data.players).find((p: any) => p.isOnline && p.name !== playerName);
-          if (nextHost) {
-            data.gameState.host = nextHost.name;
-          } else {
-            // if no one is left, reset game state
-            data.gameState.isGameActive = false;
-          }
-        }
-        writeToStorage(roomId, data);
-      }
-    };
-    window.addEventListener('beforeunload', handleBeforeUnload);
-
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-      handleBeforeUnload();
-    };
-  }, [roomId, playerName]);
-
-  // Main game loop for host
-  useEffect(() => {
-    if (isHost && gameState?.isGameActive && !gameState.winner) {
-      const gameInterval = setInterval(() => {
-        const currentData = readFromStorage(roomId);
-        if (!currentData || !currentData.gameState.isGameActive || currentData.gameState.winner) {
-          clearInterval(gameInterval);
-          return;
-        }
-
-        const { deck, calledCardIds } = currentData.gameState;
-        if (calledCardIds.length < deck.length) {
-          const nextCard = deck[calledCardIds.length];
-          currentData.gameState.calledCardIds.push(nextCard.id);
-          currentData.gameState.timestamp = Date.now();
-          writeToStorage(roomId, currentData);
-          setRoomData(currentData); // Update local state to re-render
-        } else {
-          currentData.gameState.isGameActive = false; // Game over
-          writeToStorage(roomId, currentData);
-          setRoomData(currentData);
-        }
-      }, 4000);
-      return () => clearInterval(gameInterval);
-    }
-  }, [isHost, gameState?.isGameActive, gameState?.winner, roomId]);
-
-  const cleanupInactivePlayers = (currentData: any) => {
-    const activePlayers: Record<string, PlayerState> = {};
-    Object.keys(currentData.players).forEach(pName => {
-      if (currentData.players[pName].isOnline) {
-        activePlayers[pName] = currentData.players[pName];
-      }
-    });
-    currentData.players = activePlayers;
-    return currentData;
-  };
-
-  const startGame = () => {
-    if (!isHost) return;
-    let currentData = readFromStorage(roomId);
-    if (!currentData) return;
-
-    currentData = cleanupInactivePlayers(currentData);
-
-    // Reset players' marked cards but keep their boards for this round
-    Object.keys(currentData.players).forEach(pName => {
-      currentData.players[pName].markedIndices = [];
-    });
-
-    const newDeck = createDeck();
-    currentData.gameState = {
-      ...currentData.gameState,
-      deck: newDeck,
-      calledCardIds: [newDeck[0].id], // Start with one card
-      isGameActive: true,
-      winner: null,
-      timestamp: Date.now()
-    };
-
-    writeToStorage(roomId, currentData);
-    setRoomData(currentData);
-    setRanking([]); // Limpiar ranking al iniciar juego nuevo
-  };
-
-  const handleCardClick = (card: CardType, index: number) => {
-    const currentData = readFromStorage(roomId);
-    if (!currentData || !player || currentData.gameState.winner || !currentData.gameState.calledCardIds) return;
-
-    const { calledCardIds } = currentData.gameState;
-    const isCalled = calledCardIds.includes(card.id);
-
-    if (isCalled && !player.markedIndices.includes(index)) {
-      const newMarkedIndices = [...player.markedIndices, index].sort((a, b) => a - b);
-
-      const updatedPlayer = { ...player, markedIndices: newMarkedIndices };
-      currentData.players[playerName] = updatedPlayer;
-      setPlayer(updatedPlayer);
-
-      // Cambia aquí: pasa board y calledCardIds a checkWin
-      if (checkWin(newMarkedIndices, player.board, currentData.gameState.calledCardIds)) {
-        currentData.gameState.winner = playerName;
-        currentData.gameState.isGameActive = false;
-        writeToStorage(roomId, currentData);
-        setRoomData(currentData);
-      } else {
-        writeToStorage(roomId, currentData);
-        setRoomData(currentData);
-      }
-    }
-  };
-
-  // Calcular ranking siempre que haya un ganador y roomData cambie
+  // Actualiza ranking cuando hay ganador
   useEffect(() => {
     if (roomData?.gameState?.winner) {
       const rankingArr = Object.values(roomData.players)
-        .map((p) => ({
+        .map((p: any) => ({
           name: p.name,
-          seleccionadas: p.markedIndices.length,
+          seleccionadas: p.markedIndices?.length || 0,
         }))
         .sort((a, b) => b.seleccionadas - a.seleccionadas);
       setRanking(rankingArr);
     }
   }, [roomData]);
 
-  const resetGame = () => {
-    if (!isHost) return;
-    let currentData = readFromStorage(roomId);
-    if (!currentData) return;
+  // Marcar carta
+  const handleCardClick = async (card: CardType, index: number) => {
+    if (!player || roomData.gameState.winner || !roomData.gameState.calledCardIds) return;
+    const { calledCardIds } = roomData.gameState;
+    const isCalled = calledCardIds.includes(card.id);
 
-    currentData = cleanupInactivePlayers(currentData);
+    if (isCalled && !player.markedIndices.includes(index)) {
+      const newMarkedIndices = [...player.markedIndices, index].sort((a, b) => a - b);
+      const updatedPlayers = {
+        ...roomData.players,
+        [playerName]: { ...player, markedIndices: newMarkedIndices }
+      };
 
-    // Genera un nuevo mazo y una nueva tabla para cada jugador
-    const newDeck = createDeck();
-    Object.keys(currentData.players).forEach(pName => {
-      currentData.players[pName].board = generateBoard();
-      currentData.players[pName].markedIndices = [];
-    });
+      // Solo se declara ganador si tiene 16 seleccionadas y todas han sido llamadas
+      let winner = roomData.gameState.winner;
+      let isGameActive = roomData.gameState.isGameActive;
+      if (checkWin(newMarkedIndices, player.board, calledCardIds)) {
+        winner = playerName;
+        isGameActive = false;
+      }
 
-    currentData.gameState = {
-      ...currentData.gameState,
-      deck: newDeck,
-      calledCardIds: [],
-      isGameActive: false,
-      winner: null,
-      timestamp: Date.now()
-    };
-
-    writeToStorage(roomId, currentData);
-    setRoomData(currentData);
-    setRanking([]); // Limpiar ranking al reiniciar
+      await updateRoom(roomId, {
+        players: updatedPlayers,
+        gameState: {
+          ...roomData.gameState,
+          winner,
+          isGameActive,
+        }
+      });
+    }
   };
 
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
+  // Iniciar juego (solo host)
+  const startGame = async () => {
+    if (!isHost) return;
+    const newDeck = createDeck();
+    const updatedPlayers = { ...roomData.players };
+    Object.keys(updatedPlayers).forEach(pName => {
+      updatedPlayers[pName].markedIndices = [];
+    });
+    await updateRoom(roomId, {
+      players: updatedPlayers,
+      gameState: {
+        ...roomData.gameState,
+        deck: newDeck,
+        calledCardIds: [newDeck[0].id],
+        isGameActive: true,
+        winner: null,
+        timestamp: Date.now()
+      }
+    });
+    setRanking([]);
+  };
 
-  if (!isClient) return null;
+  // Reiniciar juego (solo host)
+  const resetGame = async () => {
+    if (!isHost) return;
+    const newDeck = createDeck();
+    const updatedPlayers = { ...roomData.players };
+    Object.keys(updatedPlayers).forEach(pName => {
+      updatedPlayers[pName].board = generateBoard();
+      updatedPlayers[pName].markedIndices = [];
+    });
+    await updateRoom(roomId, {
+      players: updatedPlayers,
+      gameState: {
+        host: playerName,
+        isGameActive: false,
+        winner: null,
+        deck: [],
+        calledCardIds: [], // <--- ¡Siempre inicializa esto como array vacío!
+        timestamp: Date.now()
+      }
+    });
+    setRanking([]);
+  };
 
-  if (isLoading || !player || !gameState || !player.board) {
+  if (!player || !gameState || !player.board || !Array.isArray(gameState.calledCardIds)) {
     return (
       <div className="flex flex-col gap-4 items-center justify-center h-64">
-        <Loader2 className="w-12 h-12 animate-spin text-primary" />
         <p className="text-xl text-muted-foreground">Cargando sala, un momento...</p>
       </div>
     );
   }
 
-  const calledCards = gameState.calledCardIds.map(id => CARDS.find(c => c.id === id)).filter(Boolean) as CardType[];
+  const calledCards = Array.isArray(gameState.calledCardIds)
+    ? gameState.calledCardIds.map(id => CARDS.find(c => c.id === id)).filter(Boolean) as CardType[]
+    : [];
   const currentCard = calledCards.length > 0 ? calledCards[calledCards.length - 1] : null;
   const uniqueHistory = calledCards.filter(
     (card, index, self) => self.findIndex(c => c.id === card.id) === index

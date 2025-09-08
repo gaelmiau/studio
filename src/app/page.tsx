@@ -8,30 +8,71 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Gamepad2 } from "lucide-react";
+import { getRoom, setRoom, updateRoom } from "@/lib/firebaseRoom";
+import { generateBoard } from "@/lib/loteria";
+
+// Función para limpiar el código de sala de caracteres prohibidos por Firebase
+function sanitizeRoomId(roomId: string) {
+  return roomId.replace(/[.#$\[\]]/g, "_");
+}
 
 export default function Home() {
   const [name, setName] = useState("");
-  const [room, setRoom] = useState("");
+  const [room, setRoomState] = useState("");
   const router = useRouter();
 
-  const handleJoinRoom = (e: React.FormEvent) => {
+  const handleJoinRoom = async (e: React.FormEvent) => {
     e.preventDefault();
     if (name.trim() && room.trim()) {
-      // Validación: revisa si el nombre ya existe en la sala
-      const storageKey = `loteria-room-${room.trim()}`;
-      const roomDataStr = typeof window !== "undefined" ? localStorage.getItem(storageKey) : null;
-      if (roomDataStr) {
-        try {
-          const roomData = JSON.parse(roomDataStr);
-          if (roomData.players && roomData.players[name.trim()]) {
-            alert("Ya existe un jugador con ese nombre en la sala. Elige otro.");
-            return;
-          }
-        } catch (err) {
-          // Si hay error al leer, permite el ingreso
-        }
+      if (/[.#$\[\]]/.test(room.trim())) {
+        alert("El código de sala no puede contener los caracteres . # $ [ ]");
+        return;
       }
-      router.push(`/room/${room}?name=${encodeURIComponent(name.trim())}`);
+      const roomId = sanitizeRoomId(room.trim());
+      const playerName = name.trim();
+      const roomData = await getRoom(roomId);
+
+      if (roomData && roomData.players && roomData.players[playerName]) {
+        alert("Ya existe un jugador con ese nombre en la sala. Elige otro.");
+        return;
+      }
+
+      // Si la sala no existe, créala
+      if (!roomData) {
+        await setRoom(roomId, {
+          players: {
+            [playerName]: {
+              name: playerName,
+              isOnline: true,
+              board: generateBoard(),
+              markedIndices: []
+            }
+          },
+          gameState: {
+            host: playerName,
+            isGameActive: false,
+            winner: null,
+            deck: [],
+            calledCardIds: [],
+            timestamp: Date.now()
+          }
+        });
+      } else {
+        // Si existe, agrega el jugador con board y markedIndices
+        await updateRoom(roomId, {
+          players: {
+            ...roomData.players,
+            [playerName]: {
+              name: playerName,
+              isOnline: true,
+              board: generateBoard(),
+              markedIndices: []
+            }
+          }
+        });
+      }
+
+      router.push(`/room/${roomId}?name=${encodeURIComponent(playerName)}`);
     }
   };
 
@@ -63,7 +104,7 @@ export default function Home() {
                   <Input
                     id="room"
                     value={room}
-                    onChange={(e) => setRoom(e.target.value.toUpperCase())}
+                    onChange={(e) => setRoomState(e.target.value.toUpperCase())}
                     placeholder="Ej. JUEGO123"
                     required
                     className="text-base"

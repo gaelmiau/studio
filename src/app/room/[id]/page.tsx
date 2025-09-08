@@ -1,22 +1,62 @@
 "use client";
 
-import { useSearchParams, useParams } from 'next/navigation';
+import { useEffect, useState } from "react";
+import { useSearchParams, useParams, useRouter } from "next/navigation";
+import { listenRoom } from "@/lib/firebaseRoom";
 import { Header } from "@/components/Header";
 import { LoteriaGame } from "@/components/game/LoteriaGame";
+import { ref, onDisconnect, set } from "firebase/database";
+import { database } from "@/lib/firebase";
 
 export default function RoomPage() {
   const searchParams = useSearchParams();
   const params = useParams();
+  const router = useRouter();
+
   const name = searchParams.get('name');
   const roomId = params.id as string;
 
-  if (!name) {
-    // This could be a redirect to home page in a real app
+  const [roomData, setRoomData] = useState<any | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!roomId) return;
+    // Escucha los cambios en tiempo real de la sala
+    const unsubscribe = listenRoom(roomId, (data) => {
+      setRoomData(data);
+      setLoading(false);
+    });
+    return () => unsubscribe();
+  }, [roomId]);
+
+  // Si no hay nombre, redirige a la página principal
+  useEffect(() => {
+    if (!name) {
+      router.replace("/");
+    }
+  }, [name, router]);
+
+  // Si la sala no existe o no tiene jugadores, redirige a Home
+  useEffect(() => {
+    if (!loading && (!roomData || !roomData.players || !name || !roomData.players[name])) {
+      router.replace("/");
+    }
+  }, [loading, roomData, name, router]);
+
+  useEffect(() => {
+    if (!roomId || !name) return;
+    const playerRef = ref(database, `rooms/${roomId}/players/${name}/isOnline`);
+    // Marca offline al cerrar la pestaña
+    onDisconnect(playerRef).set(false);
+    // Marca online al entrar
+    set(playerRef, true);
+  }, [roomId, name]);
+
+  if (loading || !name || !roomData || !roomData.players || !roomData.players[name]) {
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen">
-            <h1 className="text-2xl">Error: Nombre de jugador no proporcionado.</h1>
-            <a href="/" className="text-blue-500 underline">Volver al inicio</a>
-        </div>
+      <div className="flex flex-col items-center justify-center h-64">
+        <p className="text-lg text-muted-foreground">Cargando sala, un momento...</p>
+      </div>
     );
   }
 
@@ -24,7 +64,11 @@ export default function RoomPage() {
     <div className="flex flex-col min-h-screen bg-background text-foreground">
       <Header />
       <main className="flex-grow container mx-auto p-4 md:p-6">
-        <LoteriaGame roomId={roomId} playerName={name} />
+        <LoteriaGame
+          roomId={roomId}
+          playerName={name}
+          roomData={roomData}
+        />
       </main>
       <footer className="text-center p-4 text-muted-foreground text-sm">
         <p>Sala de Juego: <span className="font-bold text-primary">{roomId}</span> | Jugador: <span className="font-bold text-primary">{name}</span></p>
