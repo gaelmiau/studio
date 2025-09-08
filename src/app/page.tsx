@@ -53,7 +53,7 @@ export default function Home() {
                     id="name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="Ej. Juanito"
+                    placeholder="Ej. El Valiente"
                     required
                     className="text-base"
                   />
