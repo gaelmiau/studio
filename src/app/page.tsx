@@ -49,7 +49,7 @@ export default function Home() {
               <form onSubmit={handleJoinRoom} className="space-y-6">
                 <div className="space-y-2">
                   <Label htmlFor="name" className="text-base">Tu Nombre</Label>
-                  <Input
+                  <Input 
                     id="name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
