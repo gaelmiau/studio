@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Header } from "@/components/Header";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -10,6 +10,8 @@ import { Label } from "@/components/ui/label";
 import { Gamepad2 } from "lucide-react";
 import { getRoom, setRoom, updateRoom } from "@/lib/firebaseRoom";
 import { generateBoard } from "@/lib/loteria";
+import { ref, onDisconnect } from "firebase/database";
+import { database } from "@/lib/firebase";
 
 // Función para limpiar el código de sala de caracteres prohibidos por Firebase
 function sanitizeRoomId(roomId: string) {
@@ -75,6 +77,16 @@ export default function Home() {
       router.push(`/room/${roomId}?name=${encodeURIComponent(playerName)}`);
     }
   };
+
+  useEffect(() => {
+    const roomId = sanitizeRoomId(room.trim());
+    const playerName = name.trim();
+    if (roomId && playerName) {
+      const playerRef = ref(database, `rooms/${roomId}/players/${playerName}`);
+      // Elimina al jugador si se desconecta (funciona incluso si se apaga la compu)
+      onDisconnect(playerRef).remove();
+    }
+  }, [room, name]);
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">

@@ -20,7 +20,11 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
 
   const gameState = roomData?.gameState ?? null;
   const allPlayers = roomData?.players ?? {};
-  const player = allPlayers[playerName];
+  // Fallback para markedIndices si no existe
+  const rawPlayer = allPlayers[playerName];
+  const player = rawPlayer
+    ? { ...rawPlayer, markedIndices: Array.isArray(rawPlayer.markedIndices) ? rawPlayer.markedIndices : [] }
+    : undefined;
   const isHost = gameState?.host === playerName;
 
   // Actualiza ranking cuando hay ganador
@@ -29,7 +33,7 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
       const rankingArr = Object.values(roomData.players)
         .map((p: any) => ({
           name: p.name,
-          seleccionadas: p.markedIndices?.length || 0,
+          seleccionadas: Array.isArray(p.markedIndices) ? p.markedIndices.length : 0,
         }))
         .sort((a, b) => b.seleccionadas - a.seleccionadas);
       setRanking(rankingArr);
@@ -106,14 +110,20 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
         isGameActive: false,
         winner: null,
         deck: [],
-        calledCardIds: [], // <--- ¡Siempre inicializa esto como array vacío!
+        calledCardIds: [],
         timestamp: Date.now()
       }
     });
     setRanking([]);
   };
 
-  if (!player || !gameState || !player.board || !Array.isArray(gameState.calledCardIds)) {
+  console.log({
+    player,
+    gameState,
+    playerBoard: player?.board,
+    calledCardIds: gameState?.calledCardIds,
+  });
+  if (!player || !gameState || !player.board) {
     return (
       <div className="flex flex-col gap-4 items-center justify-center h-64">
         <p className="text-xl text-muted-foreground">Cargando sala, un momento...</p>
@@ -142,7 +152,9 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
             <>
               <Button onClick={startGame} disabled={gameState.isGameActive || !!gameState.winner}>
                 <Play className="mr-2" />
-                {gameState.calledCardIds.length > 0 ? 'Continuar Juego' : 'Iniciar Juego'}
+                {(Array.isArray(gameState.calledCardIds) && gameState.calledCardIds.length > 0)
+                  ? 'Continuar Juego'
+                  : 'Iniciar Juego'}
               </Button>
               <Button onClick={resetGame} variant="outline">
                 <RotateCw className="mr-2" />
@@ -167,7 +179,7 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
             board={player.board}
             onCardClick={handleCardClick}
             markedIndices={player.markedIndices}
-            calledCardIds={gameState.calledCardIds}
+            calledCardIds={Array.isArray(gameState.calledCardIds) ? gameState.calledCardIds : []}
           />
         </div>
       </div>

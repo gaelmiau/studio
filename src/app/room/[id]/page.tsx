@@ -45,11 +45,9 @@ export default function RoomPage() {
 
   useEffect(() => {
     if (!roomId || !name) return;
-    const playerRef = ref(database, `rooms/${roomId}/players/${name}/isOnline`);
-    // Marca offline al cerrar la pestaña
-    onDisconnect(playerRef).set(false);
-    // Marca online al entrar
-    set(playerRef, true);
+    const playerRef = ref(database, `rooms/${roomId}/players/${name}`);
+    // Elimina al jugador completamente al desconectarse
+    onDisconnect(playerRef).remove();
   }, [roomId, name]);
 
   if (loading || !name || !roomData || !roomData.players || !roomData.players[name]) {
