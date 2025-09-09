@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { GameBoard } from "./GameBoard";
 import { DealerDisplay } from "./DealerDisplay";
 import { WinnerModal } from "./WinnerModal";
@@ -20,12 +20,12 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
 
   const gameState = roomData?.gameState ?? null;
   const allPlayers = roomData?.players ?? {};
-  // Fallback para markedIndices si no existe
   const rawPlayer = allPlayers[playerName];
   const player = rawPlayer
     ? { ...rawPlayer, markedIndices: Array.isArray(rawPlayer.markedIndices) ? rawPlayer.markedIndices : [] }
     : undefined;
   const isHost = gameState?.host === playerName;
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // Actualiza ranking cuando hay ganador
   useEffect(() => {
@@ -53,7 +53,6 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
         [playerName]: { ...player, markedIndices: newMarkedIndices }
       };
 
-      // Solo se declara ganador si tiene 16 seleccionadas y todas han sido llamadas
       let winner = roomData.gameState.winner;
       let isGameActive = roomData.gameState.isGameActive;
       if (checkWin(newMarkedIndices, player.board, calledCardIds)) {
@@ -65,7 +64,7 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
         players: updatedPlayers,
         gameState: {
           ...roomData.gameState,
-          winner,
+          winner: winner ?? null,
           isGameActive,
         }
       });
@@ -117,12 +116,55 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
     setRanking([]);
   };
 
-  console.log({
-    player,
-    gameState,
-    playerBoard: player?.board,
-    calledCardIds: gameState?.calledCardIds,
-  });
+  // Cantada automática de cartas (solo host)
+  useEffect(() => {
+    if (
+      isHost &&
+      gameState?.isGameActive &&
+      !gameState?.winner &&
+      Array.isArray(gameState.deck) &&
+      Array.isArray(gameState.calledCardIds)
+    ) {
+      if (gameState.calledCardIds.length >= gameState.deck.length) return;
+
+      if (intervalRef.current) clearInterval(intervalRef.current);
+
+      intervalRef.current = setInterval(async () => {
+        // Obtén el estado más reciente
+        if (
+          !gameState.isGameActive ||
+          gameState.winner ||
+          gameState.calledCardIds.length >= gameState.deck.length
+        ) {
+          if (intervalRef.current) clearInterval(intervalRef.current);
+          return;
+        }
+        const nextIndex = gameState.calledCardIds.length;
+        const newCalledCardIds = [
+          ...gameState.calledCardIds,
+          gameState.deck[nextIndex].id,
+        ];
+        await updateRoom(roomId, {
+          gameState: {
+            ...gameState,
+            calledCardIds: newCalledCardIds,
+          },
+        });
+      }, 5000); // <-- 5 segundos entre cartas
+    }
+
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, [
+    isHost,
+    gameState?.isGameActive,
+    gameState?.winner,
+    gameState?.deck,
+    gameState?.calledCardIds,
+    roomId,
+  ]);
+
   if (!player || !gameState || !player.board) {
     return (
       <div className="flex flex-col gap-4 items-center justify-center h-64">
