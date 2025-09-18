@@ -14,24 +14,20 @@ export function GameBoard({ board, onCardClick, markedIndices, calledCardIds }: 
   const seleccionadas = markedIndices.length;
 
   return (
-    <div className="grid grid-cols-4 gap-2 md:gap-4 p-2 md:p-4 rounded-lg bg-secondary border-2 border-primary/20">
-      {board.map((card, index) => {
-        const isMarked = markedIndices.includes(index);
-        const isCalled = calledCardIds.includes(card.id);
-
-        // Solo es clickeable si la carta fue llamada y no está marcada
-        const isClickable = isCalled && !isMarked;
-
-        return (
+    <div
+      className="grid grid-cols-4 gap-2 p-2 rounded-lg bg-secondary border-2 border-primary/20"
+      style={{ width: 265, height: 380 }} // Puedes ajustar estos valores
+    >
+      {board.map((card, index) => (
+        <div key={card.id} className="w-full h-full">
           <GameCard
-            key={card.id}
             card={card}
-            isMarked={isMarked}
-            isClickable={isClickable}
+            isMarked={markedIndices.includes(index)}
+            isClickable={calledCardIds.includes(card.id) && !markedIndices.includes(index)}
             onClick={() => onCardClick(card, index)}
           />
-        );
-      })}
+        </div>
+      ))}
     </div>
   );
 }

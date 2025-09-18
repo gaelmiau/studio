@@ -213,7 +213,6 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
       </div>
 
       <div className="w-full lg:w-3/4 flex flex-col gap-6 items-center">
-        <DealerDisplay currentCard={currentCard} history={uniqueHistory.slice(0, -1)} />
 
         <div className="w-full max-w-2xl mx-auto">
           <h2 className="text-center text-2xl font-headline mb-4">Tu Tabla</h2>
@@ -224,6 +223,9 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
             calledCardIds={Array.isArray(gameState.calledCardIds) ? gameState.calledCardIds : []}
           />
         </div>
+        <DealerDisplay currentCard={currentCard} history={uniqueHistory.slice(0, -1)} />
+
+
       </div>
 
       <WinnerModal
