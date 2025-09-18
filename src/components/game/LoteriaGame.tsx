@@ -221,7 +221,7 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
         {/* TABLERO */}
         <div className="col-span-6 flex flex-col items-end">
           <div className="w-[322px]">
-            <h2 className="text-center text-xl font-headline mb-2">Tu Tabla</h2>
+            <h2 className="text-center text-xl font-headline mb-2"></h2>
             <GameBoard
               board={player.board}
               onCardClick={handleCardClick}

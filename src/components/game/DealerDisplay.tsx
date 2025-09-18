@@ -22,7 +22,7 @@ export function DealerDisplay({
     <div className="w-full flex flex-col md:flex-row gap-4 items-start">
       {showCurrentCard && (
         <div className="flex-1">
-          <h3 className="font-headline text-xl text-center mb-2">Carta Actual</h3>
+          <h3 className="font-headline text-xl text-center mb-2"></h3> {/* Carta Actual */}
           <Card className="aspect-[3/4.2] w-full max-w-xs mx-auto overflow-hidden border-2 border-primary bg-card">
             {currentCard ? (
               <div className="relative w-full h-full">
@@ -46,7 +46,7 @@ export function DealerDisplay({
 
       {showHistory && (
         <div className="flex-1 min-w-0">
-          <h3 className="font-headline text-xl text-center mb-2">Historial</h3>
+          <h3 className="font-headline text-xl text-center mb-2"></h3> {/* Historial de Cartas */}
           <Card className="h-full">
             <CardContent className="p-2">
               <ScrollArea className="w-full h-[90px]">
