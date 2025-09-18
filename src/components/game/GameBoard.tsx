@@ -16,7 +16,7 @@ export function GameBoard({ board, onCardClick, markedIndices, calledCardIds }: 
   return (
     <div
       className="grid grid-cols-4 gap-2 p-2 rounded-lg bg-secondary border-2 border-primary/20"
-      style={{ width: 265, height: 380 }} // Puedes ajustar estos valores
+      style={{ width: 286, height: 404 }} 
     >
       {board.map((card, index) => (
         <div key={card.id} className="w-full h-full">
