@@ -4,8 +4,8 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 
 export const metadata: Metadata = {
-  title: 'WebSockets Lotería',
-  description: 'A modern take on the classic Mexican Lotería game.',
+  title: 'Lotería - Seguridad de la Información',
+  description: 'Elaborado por Célula de Desarrollo de Contenidos DGTI Xalapa.',
 };
 
 export default function RootLayout({

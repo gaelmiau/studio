@@ -256,7 +256,13 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
 
         {/* CARTA ACTUAL */}
         <div className="col-span-5 flex flex-col items-center">
-            <DealerDisplay currentCard={currentCard} showCurrentCard={true} showHistory={false} />
+          <div className="w-[250px] h-[298px]">
+            <DealerDisplay
+              currentCard={currentCard}
+              showCurrentCard={true}
+              showHistory={false}
+            />
+          </div>
         </div>
         {/* TABLERO */}
         <div className="col-span-3 flex flex-col items-end">
