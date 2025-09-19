@@ -68,9 +68,11 @@ export default function RoomPage() {
           roomData={roomData}
         />
       </main>
+      {/* 
       <footer className="text-center p-4 text-muted-foreground text-sm">
         <p>Sala de Juego: <span className="font-bold text-primary">{roomId}</span> | Jugador: <span className="font-bold text-primary">{name}</span></p>
       </footer>
+      */}
     </div>
   );
 }

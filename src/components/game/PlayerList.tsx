@@ -14,14 +14,18 @@ interface PlayerListProps {
   players: Record<string, PlayerState>;
   currentPlayerName: string;
   hostName: string;
+  roomId: string;
 }
 
-export function PlayerList({ players, currentPlayerName, hostName }: PlayerListProps) {
+export function PlayerList({ players, currentPlayerName, hostName, roomId }: PlayerListProps) {
   const playerArray = Object.values(players);
 
   return (
     <Card>
       <CardHeader>
+        <div className="mb-2 text-sm text-muted-foreground text-center">
+          Sala de Juego: <span className="font-bold text-primary">{roomId}</span>
+        </div>
         <CardTitle className="flex items-center gap-2">
           <Users />
           Jugadores ({playerArray.filter(p => p.isOnline).length}/{playerArray.length})

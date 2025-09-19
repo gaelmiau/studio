@@ -132,7 +132,7 @@ export default function Home() {
         </div>
       </main>
       <footer className="text-center p-4 text-muted-foreground text-sm">
-        <p>Hecho con ♥ para la Lotería Mexicana</p>
+        <p>Elaborado por Célula de Desarrollo de Contenidos DGTI Xalapa.</p>
       </footer>
     </div>
   );

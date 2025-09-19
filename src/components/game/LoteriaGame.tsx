@@ -181,16 +181,34 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
     (card, index, self) => self.findIndex(c => c.id === card.id) === index
   );
 
+  // Reiniciar solo la tabla del jugador actual
+  const resetPlayerBoard = async () => {
+    if (!player) return;
+    const updatedPlayers = {
+      ...roomData.players,
+      [playerName]: {
+        ...player,
+        board: generateBoard(),
+        markedIndices: [],
+      }
+    };
+    await updateRoom(roomId, {
+      players: updatedPlayers,
+    });
+    setRanking([]);
+  };
+
   return (
     <>
       {/* Grid principal */}
-      <div className="grid grid-cols-12 gap-6 w-full">
+      <div className="grid grid-cols-12 gap-4 w-full">
         {/* LISTA DE JUGADORES */}
         <div className="col-span-3">
           <PlayerList
             players={allPlayers}
             currentPlayerName={playerName}
             hostName={gameState.host || ""}
+            roomId={roomId}
           />
           <div className="mt-4 flex flex-col gap-2">
             {isHost && (
@@ -198,15 +216,36 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
                 <Button onClick={startGame} disabled={gameState.isGameActive || !!gameState.winner}>
                   <Play className="mr-2" />
                   {(Array.isArray(gameState.calledCardIds) && gameState.calledCardIds.length > 0)
-                    ? 'Continuar Juego'
+                    ? 'Iniciar Juego'
                     : 'Iniciar Juego'}
                 </Button>
-                <Button onClick={resetGame} variant="outline">
-                  <RotateCw className="mr-2" />
-                  Reiniciar Sala (Nuevas Tablas)
-                </Button>
+                {/* Botón para pausar el juego, solo anfitrión */}
+                {gameState.isGameActive && !gameState.winner && (
+                  <Button
+                    onClick={async () => {
+                      await updateRoom(roomId, {
+                        gameState: {
+                          ...gameState,
+                          isGameActive: false,
+                        }
+                      });
+                    }}
+                    variant="destructive"
+                  >
+                    Terminar Juego
+                  </Button>
+                )}
               </>
             )}
+            {/* Este botón lo ve cualquier jugador, pero se bloquea si el juego está activo */}
+            <Button
+              onClick={resetPlayerBoard}
+              variant="outline"
+              disabled={gameState.isGameActive}
+            >
+              <RotateCw className="mr-2" />
+              Nueva Tabla
+            </Button>
             {!isHost && gameState.host && !gameState.isGameActive && !gameState.winner && (
               <p className="text-center text-muted-foreground p-2 bg-muted rounded-md">
                 <span className="font-bold">{gameState.host || "Anfitrión"}</span> es el anfitrión. Esperando a que inicie el juego...
@@ -214,21 +253,20 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
             )}
           </div>
         </div>
+
         {/* CARTA ACTUAL */}
-        <div className="col-span-3 flex flex-col items-center">
-          <DealerDisplay currentCard={currentCard} showCurrentCard={true} showHistory={false} />
+        <div className="col-span-5 flex flex-col items-center">
+            <DealerDisplay currentCard={currentCard} showCurrentCard={true} showHistory={false} />
         </div>
         {/* TABLERO */}
-        <div className="col-span-6 flex flex-col items-end">
-          <div className="w-[322px]">
-            <h2 className="text-center text-xl font-headline mb-2"></h2>
-            <GameBoard
-              board={player.board}
-              onCardClick={handleCardClick}
-              markedIndices={player.markedIndices}
-              calledCardIds={Array.isArray(gameState.calledCardIds) ? gameState.calledCardIds : []}
-            />
-          </div>
+        <div className="col-span-3 flex flex-col items-end">
+          <h2 className="text-center text-xl font-headline mb-2"></h2>
+          <GameBoard
+            board={player.board}
+            onCardClick={handleCardClick}
+            markedIndices={player.markedIndices}
+            calledCardIds={Array.isArray(gameState.calledCardIds) ? gameState.calledCardIds : []}
+          />
         </div>
       </div>
 
