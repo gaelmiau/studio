@@ -198,75 +198,70 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
     setRanking([]);
   };
 
-  return (
-    <>
-      {/* Grid principal */}
-      <div className="grid grid-cols-12 gap-4 w-full">
-        {/* LISTA DE JUGADORES */}
-        <div className="col-span-3">
-          <PlayerList
-            players={allPlayers}
-            currentPlayerName={playerName}
-            hostName={gameState.host || ""}
-            roomId={roomId}
-          />
-          <div className="mt-4 flex flex-col gap-2">
-            {isHost && (
-              <>
-                <Button onClick={startGame} disabled={gameState.isGameActive || !!gameState.winner}>
-                  <Play className="mr-2" />
-                  {(Array.isArray(gameState.calledCardIds) && gameState.calledCardIds.length > 0)
-                    ? 'Iniciar Juego'
-                    : 'Iniciar Juego'}
+  // -- reemplaza la sección del return por esto --
+return (
+  <>
+    {/* Grid principal: 12 columnas */}
+    <div className="grid grid-cols-12 gap-4 w-full">
+      {/* PLAYER LIST - izquierda */}
+      <div className="col-span-12 md:col-span-3">
+        <PlayerList
+          players={allPlayers}
+          currentPlayerName={playerName}
+          hostName={gameState.host || ""}
+          roomId={roomId}
+        />
+        <div className="mt-4 flex flex-col gap-2">
+          {isHost && (
+            <>
+              <Button onClick={startGame} disabled={gameState.isGameActive || !!gameState.winner}>
+                <Play className="mr-2" />
+                Iniciar Juego
+              </Button>
+              {gameState.isGameActive && !gameState.winner && (
+                <Button
+                  onClick={async () => {
+                    await updateRoom(roomId, {
+                      gameState: { ...gameState, isGameActive: false },
+                    });
+                  }}
+                  variant="destructive"
+                >
+                  Terminar Juego
                 </Button>
-                {/* Botón para pausar el juego, solo anfitrión */}
-                {gameState.isGameActive && !gameState.winner && (
-                  <Button
-                    onClick={async () => {
-                      await updateRoom(roomId, {
-                        gameState: {
-                          ...gameState,
-                          isGameActive: false,
-                        }
-                      });
-                    }}
-                    variant="destructive"
-                  >
-                    Terminar Juego
-                  </Button>
-                )}
-              </>
-            )}
-            {/* Este botón lo ve cualquier jugador, pero se bloquea si el juego está activo */}
-            <Button
-              onClick={resetPlayerBoard}
-              variant="outline"
-              disabled={gameState.isGameActive}
-            >
-              <RotateCw className="mr-2" />
-              Nueva Tabla
-            </Button>
-            {!isHost && gameState.host && !gameState.isGameActive && !gameState.winner && (
-              <p className="text-center text-muted-foreground p-2 bg-muted rounded-md">
-                <span className="font-bold">{gameState.host || "Anfitrión"}</span> es el anfitrión. Esperando a que inicie el juego...
-              </p>
-            )}
-          </div>
-        </div>
+              )}
+            </>
+          )}
 
-        {/* CARTA ACTUAL */}
-        <div className="col-span-5 flex flex-col items-center">
-          <div className="w-[250px] h-[298px]">
-            <DealerDisplay
-              currentCard={currentCard}
-              showCurrentCard={true}
-              showHistory={false}
-            />
-          </div>
+          <Button onClick={resetPlayerBoard} variant="outline" disabled={gameState.isGameActive}>
+            <RotateCw className="mr-2" />
+            Nueva Tabla
+          </Button>
+
+          {!isHost && gameState.host && !gameState.isGameActive && !gameState.winner && (
+            <p className="text-center text-muted-foreground p-2 bg-muted rounded-md">
+              <span className="font-bold">{gameState.host || "Anfitrión"}</span> es el anfitrión. Esperando...
+            </p>
+          )}
         </div>
-        {/* TABLERO */}
-        <div className="col-span-3 flex flex-col items-end">
-          <h2 className="text-center text-xl font-headline mb-2"></h2>
+      </div>
+
+      {/* CARTA ACTUAL - centro */}
+      <div className="col-span-12 md:col-span-5 flex justify-center">
+        {/* wrapper responsivo: width entre 140px y 250px según viewport, y mantiene la proporción */}
+        <div className="w-[clamp(140px,18vw,250px)] aspect-[250/298]">
+          <DealerDisplay
+            currentCard={currentCard}
+            showCurrentCard={true}
+            showHistory={false}
+          />
+        </div>
+      </div>
+
+      {/* TABLERO - derecha */}
+      <div className="col-span-12 md:col-span-4 flex justify-center">
+        {/* wrapper responsivo para tablero: cambia ancho entre 180px y 320px, mantiene proporción */}
+        <div className="w-[clamp(180px,22vw,320px)] aspect-[265/380]">
           <GameBoard
             board={player.board}
             onCardClick={handleCardClick}
@@ -275,19 +270,28 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
           />
         </div>
       </div>
+    </div>
 
-      {/* HISTORIAL: solo centro y derecha */}
-      <div className="grid grid-cols-12 w-full mt-6">
-        <div className="col-start-4 col-span-9">
-          <DealerDisplay currentCard={null} history={uniqueHistory.slice(0, -1)} showCurrentCard={false} showHistory={true} />
+    {/* HISTORIAL: solo centro+derecha en md+, en móvil ocupa toda la fila debajo */}
+    <div className="grid grid-cols-12 w-full mt-6">
+      <div className="col-start-1 md:col-start-4 col-span-12 md:col-span-9">
+        <div className="w-full max-w-full md:max-w-[856px]">
+          <DealerDisplay
+            currentCard={null}
+            history={uniqueHistory.slice(0, -1)}
+            showCurrentCard={false}
+            showHistory={true}
+          />
         </div>
       </div>
+    </div>
 
-      <WinnerModal
-        open={!!gameState.winner}
-        ranking={ranking}
-        onRestart={isHost ? resetGame : undefined}
-      />
-    </>
-  );
+    <WinnerModal
+      open={!!gameState.winner}
+      ranking={ranking}
+      onRestart={isHost ? resetGame : undefined}
+    />
+  </>
+);
+
 }
