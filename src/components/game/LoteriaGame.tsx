@@ -198,100 +198,112 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
     setRanking([]);
   };
 
-  // -- reemplaza la sección del return por esto --
-return (
-  <>
-    {/* Grid principal: 12 columnas */}
-    <div className="grid grid-cols-12 gap-4 w-full">
-      {/* PLAYER LIST - izquierda */}
-      <div className="col-span-12 md:col-span-3">
-        <PlayerList
-          players={allPlayers}
-          currentPlayerName={playerName}
-          hostName={gameState.host || ""}
-          roomId={roomId}
-        />
-        <div className="mt-4 flex flex-col gap-2">
-          {isHost && (
-            <>
-              <Button onClick={startGame} disabled={gameState.isGameActive || !!gameState.winner}>
-                <Play className="mr-2" />
-                Iniciar Juego
-              </Button>
-              {gameState.isGameActive && !gameState.winner && (
-                <Button
-                  onClick={async () => {
-                    await updateRoom(roomId, {
-                      gameState: { ...gameState, isGameActive: false },
-                    });
-                  }}
-                  variant="destructive"
-                >
-                  Terminar Juego
-                </Button>
+
+  return (
+    <>
+      {/* Grid principal: cambia de 1 columna en móvil a 12 columnas en escritorio */}
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-4 w-full">
+
+        {/* PLAYER LIST - izquierda */}
+        <div className="flex justify-center col-span-1 md:col-span-3">
+          {/* Contenedor responsivo para ajustar tamaño según el viewport */}
+          <div className="w-[clamp(160px,18vw,260px)]">
+            {/* Lista de jugadores */}
+            <PlayerList
+              players={allPlayers}
+              currentPlayerName={playerName}
+              hostName={gameState.host || ""}
+              roomId={roomId}
+            />
+
+            {/* Botones de control del juego */}
+            <div className="mt-4 flex flex-col gap-2">
+              {/* Solo lo ve el anfitrión */}
+              {isHost && (
+                <>
+                  {/* Botón para iniciar juego */}
+                  <Button onClick={startGame} disabled={gameState.isGameActive || !!gameState.winner}>
+                    <Play className="mr-2" />
+                    Iniciar Juego
+                  </Button>
+                  {/* Botón para terminar juego activo */}
+                  {gameState.isGameActive && !gameState.winner && (
+                    <Button
+                      onClick={async () => {
+                        await updateRoom(roomId, {
+                          gameState: { ...gameState, isGameActive: false },
+                        });
+                      }}
+                      variant="destructive"
+                    >
+                      Terminar Juego
+                    </Button>
+                  )}
+                </>
               )}
-            </>
-          )}
 
-          <Button onClick={resetPlayerBoard} variant="outline" disabled={gameState.isGameActive}>
-            <RotateCw className="mr-2" />
-            Nueva Tabla
-          </Button>
+              {/* Botón para reiniciar la tabla del jugador actual */}
+              <Button onClick={resetPlayerBoard} variant="outline" disabled={gameState.isGameActive}>
+                <RotateCw className="mr-2" />
+                Nueva Tabla
+              </Button>
 
-          {!isHost && gameState.host && !gameState.isGameActive && !gameState.winner && (
-            <p className="text-center text-muted-foreground p-2 bg-muted rounded-md">
-              <span className="font-bold">{gameState.host || "Anfitrión"}</span> es el anfitrión. Esperando...
-            </p>
-          )}
+              {/* Mensaje para jugadores que no son anfitrión */}
+              {!isHost && gameState.host && !gameState.isGameActive && !gameState.winner && (
+                <p className="text-center text-muted-foreground p-2 bg-muted rounded-md">
+                  <span className="font-bold">{gameState.host || "Anfitrión"}</span> es el anfitrión. Esperando...
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* CARTA ACTUAL - centro (oculta en móvil) */}
+        <div className="hidden md:flex justify-center col-span-1 md:col-span-5">
+          {/* Contenedor responsivo que mantiene proporción */}
+          <div className="w-[clamp(140px,18vw,250px)] aspect-[250/298]">
+            <DealerDisplay currentCard={currentCard} showCurrentCard={true} showHistory={false} />
+          </div>
+        </div>
+
+        {/* TABLERO - derecha */}
+        <div className="flex justify-center col-span-1 md:col-span-4">
+          {/* Contenedor responsivo que mantiene proporción */}
+          <div className="w-[clamp(220px,28vw,400px)] aspect-[265/380]">
+            <GameBoard
+              board={player.board}
+              onCardClick={handleCardClick}
+              markedIndices={player.markedIndices}
+              calledCardIds={Array.isArray(gameState.calledCardIds) ? gameState.calledCardIds : []}
+            />
+          </div>
+
         </div>
       </div>
 
-      {/* CARTA ACTUAL - centro */}
-      <div className="col-span-12 md:col-span-5 flex justify-center">
-        {/* wrapper responsivo: width entre 140px y 250px según viewport, y mantiene la proporción */}
-        <div className="w-[clamp(140px,18vw,250px)] aspect-[250/298]">
-          <DealerDisplay
-            currentCard={currentCard}
-            showCurrentCard={true}
-            showHistory={false}
-          />
+      {/* HISTORIAL: ocupa todo el ancho en móvil, y solo centro+derecha en escritorio */}
+      <div className="grid grid-cols-1 md:grid-cols-12 w-full mt-6">
+        <div className="col-span-1 md:col-start-4 md:col-span-9 flex justify-center">
+          {/* Contenedor scrollable */}
+          <div className="w-full overflow-auto">
+            <DealerDisplay
+              currentCard={null}
+              history={uniqueHistory.slice(0, -1)}
+              showCurrentCard={false}
+              showHistory={true}
+            />
+          </div>
         </div>
       </div>
 
-      {/* TABLERO - derecha */}
-      <div className="col-span-12 md:col-span-4 flex justify-center">
-        {/* wrapper responsivo para tablero: cambia ancho entre 180px y 320px, mantiene proporción */}
-        <div className="w-[clamp(180px,22vw,320px)] aspect-[265/380]">
-          <GameBoard
-            board={player.board}
-            onCardClick={handleCardClick}
-            markedIndices={player.markedIndices}
-            calledCardIds={Array.isArray(gameState.calledCardIds) ? gameState.calledCardIds : []}
-          />
-        </div>
-      </div>
-    </div>
+      {/* Modal que muestra el ganador */}
+      <WinnerModal
+        open={!!gameState.winner}
+        ranking={ranking}
+        onRestart={isHost ? resetGame : undefined}
+      />
+    </>
+  );
 
-    {/* HISTORIAL: solo centro+derecha en md+, en móvil ocupa toda la fila debajo */}
-    <div className="grid grid-cols-12 w-full mt-6">
-      <div className="col-start-1 md:col-start-4 col-span-12 md:col-span-9">
-        <div className="w-full max-w-full md:max-w-[856px]">
-          <DealerDisplay
-            currentCard={null}
-            history={uniqueHistory.slice(0, -1)}
-            showCurrentCard={false}
-            showHistory={true}
-          />
-        </div>
-      </div>
-    </div>
-
-    <WinnerModal
-      open={!!gameState.winner}
-      ranking={ranking}
-      onRestart={isHost ? resetGame : undefined}
-    />
-  </>
-);
 
 }

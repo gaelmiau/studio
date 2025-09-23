@@ -14,10 +14,7 @@ export function GameBoard({ board, onCardClick, markedIndices, calledCardIds }: 
   const seleccionadas = markedIndices.length;
 
   return (
-    <div
-      className="grid grid-cols-4 gap-2 p-2 rounded-lg bg-secondary border-2 border-primary/20"
-      style={{ width: 286, height: 404 }} 
-    >
+    <div className="grid grid-cols-4 gap-2 p-2 rounded-lg bg-secondary border-2 border-primary/20 w-full h-full">
       {board.map((card, index) => (
         <div key={card.id} className="w-full h-full">
           <GameCard
