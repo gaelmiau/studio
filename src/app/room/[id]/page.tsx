@@ -58,6 +58,20 @@ export default function RoomPage() {
     };
   }, [roomId, name]);
 
+  useEffect(() => {
+    if (!roomData || !roomData.players || !roomData.gameState) return;
+    const hostName = roomData.gameState.host;
+    const playerNames = Object.keys(roomData.players);
+
+    // Si el anfitrión actual ya no está en la lista de jugadores, reasigna
+    if (hostName && !playerNames.includes(hostName)) {
+      // Solo el primer jugador conectado ejecuta la reasignación para evitar conflictos
+      if (name === playerNames[0]) {
+        handlePlayerLeave(roomId, hostName, roomData);
+      }
+    }
+  }, [roomData, roomId, name]);
+
   if (loading || !name || !roomData || !roomData.players || !roomData.players[name]) {
     return (
       <div className="flex flex-col items-center justify-center h-64">
