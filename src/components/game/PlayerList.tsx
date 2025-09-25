@@ -40,13 +40,13 @@ export function PlayerList({
           <div className="flex items-center gap-2">
             <Users />
             Jugadores (
-            {playerArray.filter((p) => p.isOnline).length})
+            {playerArray.filter((p) => p.isOnline).length})  
           </div>
 
           {/* Botón circular */}
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="w-8 h-8 rounded-full flex items-center justify-center bg-[hsl(var(--primary))] text-white text-lg"
+            className="w-6 h-6 rounded-full flex items-center justify-center bg-[hsl(var(--primary))] text-white text-lg"
           >
             {isExpanded ? "–" : "+"}
           </button>
@@ -66,6 +66,7 @@ export function PlayerList({
             style={{
               maxHeight: "6.5rem", // Ajustar este valor para controlar cuántos jugadores se ven
               // Ejemplo:
+              // ~6.5rem ≈ 2 jugadores
               // ~12rem ≈ 3 jugadores
               // ~16rem ≈ 4 jugadores
               // ~20rem ≈ 5 jugadores

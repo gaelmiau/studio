@@ -107,7 +107,7 @@ export default function Home() {
               <form onSubmit={handleJoinRoom} className="space-y-6">
                 <div className="space-y-2">
                   <Label htmlFor="name" className="text-base">Tu Nombre</Label>
-                  <Input 
+                  <Input
                     id="name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
@@ -128,10 +128,17 @@ export default function Home() {
                   />
                 </div>
                 <Button type="submit" className="w-full" size="lg">
-                  <Gamepad2 className="mr-2"/>
+                  <Gamepad2 className="mr-2" />
                   Entrar a la Sala
                 </Button>
+
               </form>
+              {/* Botón para Glosario, fuera del form para redirigirte */}
+              <div className="my-4 border-t border-muted">
+                <Button className="w-full" variant="outline" size="lg">
+                  Glosario
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </div>
