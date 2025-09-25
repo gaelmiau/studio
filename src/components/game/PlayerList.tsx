@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Crown, Users } from "lucide-react";
+import { Crown, Plus, Users, Minus } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
@@ -48,7 +48,8 @@ export function PlayerList({
             onClick={() => setIsExpanded(!isExpanded)}
             className="w-6 h-6 rounded-full flex items-center justify-center bg-[hsl(var(--primary))] text-white text-lg"
           >
-            {isExpanded ? "–" : "+"}
+            {isExpanded ? <Minus className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+            
           </button>
         </CardTitle>
       </CardHeader>

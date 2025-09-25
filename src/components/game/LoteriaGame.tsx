@@ -8,6 +8,14 @@ import { Card as CardType, generateBoard, createDeck, checkWin, CARDS } from "@/
 import { Play, RotateCw } from "lucide-react";
 import { PlayerList } from "./PlayerList";
 import { updateRoom } from "@/lib/firebaseRoom";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
+
 
 interface LoteriaGameProps {
   roomId: string;
@@ -254,17 +262,39 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
                   <span className="font-bold">{gameState.host || "Anfitrión"}</span> es el anfitrión. Esperando...
                 </p>
               )}
+
+              {/* Cambio de tipo de juego */}
+              <Select
+                onValueChange={(value) => {
+                  console.log("Modo de juego seleccionado:", value);
+                  // Aquí podrías actualizar en Firebase el tipo de juego elegido
+                  // por ejemplo: updateRoom(roomId, { gameState: { ...gameState, gameMode: value } });
+                }}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Seleccionar modo de juego" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="full">Tablero lleno (16 cartas)</SelectItem>
+                  <SelectItem value="vertical">Vertical</SelectItem>
+                  <SelectItem value="horizontal">Horizontal</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </div>
 
-        {/* CARTA ACTUAL - centro (oculta en móvil) */}
-        <div className="hidden md:flex justify-center col-span-1 md:col-span-5">
-          {/* Contenedor responsivo que mantiene proporción */}
-          <div className="w-[clamp(140px,18vw,250px)] aspect-[250/298]">
-            <DealerDisplay currentCard={currentCard} showCurrentCard={true} showHistory={false} />
+        {/* CARTA ACTUAL - visible en móvil y centrada en escritorio */}
+        <div className="flex justify-center col-span-1 md:col-span-5 order-first md:order-none">
+          <div className="w-full max-w-[280px] sm:max-w-[320px] md:w-[clamp(140px,18vw,250px)] aspect-[250/298]">
+            <DealerDisplay
+              currentCard={currentCard}
+              showCurrentCard={true}
+              showHistory={false}
+            />
           </div>
         </div>
+
 
         {/* TABLERO - derecha */}
         <div className="flex justify-center col-span-1 md:col-span-4">
