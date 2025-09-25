@@ -22,15 +22,14 @@ export function DealerDisplay({
     <div className="w-full flex flex-col md:flex-row gap-4 items-start">
       {showCurrentCard && (
         <div className="flex-1">
-          <h3 className="font-headline text-xl text-center mb-2"></h3> {/* Carta Actual */}
-          <Card className="w-[clamp(220px,28vw,400px)] aspect-[3/4] md:w-[clamp(140px,18vw,250px)] md:aspect-[250/298] flex items-center justify-center">
+          <Card className="w-[clamp(220px,28vw,400px)] aspect-[3/4] md:w-[clamp(140px,18vw,250px)] md:aspect-[250/298] overflow-hidden border-2 border-primary bg-card">
             {currentCard ? (
               <div className="relative w-full h-full">
                 <Image
                   src={currentCard.imageUrl}
                   alt={currentCard.name}
                   fill
-                  className="object-contain"
+                  className="object-cover"
                   priority
                 />
               </div>
