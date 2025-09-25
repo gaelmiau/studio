@@ -61,3 +61,28 @@
     @apply bg-background text-foreground;
   }
 }
+
+
+/* Scroll personalizado */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;               /* Grosor */
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;   /* Fondo del track */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: hsl(270, 80%, 60%); /* Morado */
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: hsl(270, 80%, 50%); /* Morado más oscuro */
+}
+
+/* Firefox */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(270, 80%, 60%) transparent;
+}

@@ -40,7 +40,7 @@ export function PlayerList({
           <div className="flex items-center gap-2">
             <Users />
             Jugadores (
-            {playerArray.filter((p) => p.isOnline).length}/{playerArray.length})
+            {playerArray.filter((p) => p.isOnline).length})
           </div>
 
           {/* Botón circular */}
@@ -62,7 +62,7 @@ export function PlayerList({
         >
           {/* Contenedor con scroll */}
           <div
-            className=" "
+            className="overflow-y-auto custom-scrollbar"
             style={{
               maxHeight: "6.5rem", // Ajustar este valor para controlar cuántos jugadores se ven
               // Ejemplo:
