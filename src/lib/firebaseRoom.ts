@@ -29,3 +29,25 @@ export async function updateRoom(roomId: string, data: any) {
   const roomRef = ref(database, `rooms/${roomId}`);
   await update(roomRef, data);
 }
+
+export async function handlePlayerLeave(roomId: string, playerName: string, roomData: any) {
+  const players = { ...roomData.players };
+  delete players[playerName];
+
+  const remainingPlayers = Object.keys(players);
+  // Elige uno aleatorio como anfitrión si hay jugadores
+  let newHost = roomData.gameState.host;
+  if (playerName === roomData.gameState.host) {
+    newHost = remainingPlayers.length > 0
+      ? remainingPlayers[Math.floor(Math.random() * remainingPlayers.length)]
+      : null;
+  }
+
+  await updateRoom(roomId, {
+    players,
+    gameState: {
+      ...roomData.gameState,
+      host: newHost,
+    }
+  });
+}

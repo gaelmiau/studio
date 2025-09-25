@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { useSearchParams, useParams, useRouter } from "next/navigation";
-import { listenRoom } from "@/lib/firebaseRoom";
+import { listenRoom, handlePlayerLeave, getRoom } from "@/lib/firebaseRoom";
 import { Header } from "@/components/Header";
 import { LoteriaGame } from "@/components/game/LoteriaGame";
-import { ref, onDisconnect, set } from "firebase/database";
+import { ref, onDisconnect } from "firebase/database";
 import { database } from "@/lib/firebase";
 
 export default function RoomPage() {
@@ -46,8 +46,16 @@ export default function RoomPage() {
   useEffect(() => {
     if (!roomId || !name) return;
     const playerRef = ref(database, `rooms/${roomId}/players/${name}`);
-    // Elimina al jugador completamente al desconectarse
     onDisconnect(playerRef).remove();
+
+    // Cuando el componente se desmonta (jugador se va), reasigna anfitrión si es necesario
+    return () => {
+      getRoom(roomId).then(roomData => {
+        if (roomData) {
+          handlePlayerLeave(roomId, name, roomData);
+        }
+      });
+    };
   }, [roomId, name]);
 
   if (loading || !name || !roomData || !roomData.players || !roomData.players[name]) {

@@ -61,6 +61,7 @@ export default function Home() {
         });
       } else {
         // Si existe, agrega el jugador con board y markedIndices
+        const newHost = roomData.gameState.host || playerName;
         await updateRoom(roomId, {
           players: {
             ...roomData.players,
@@ -70,6 +71,10 @@ export default function Home() {
               board: generateBoard(),
               markedIndices: []
             }
+          },
+          gameState: {
+            ...roomData.gameState,
+            host: newHost,
           }
         });
       }
