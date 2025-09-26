@@ -21,8 +21,18 @@ export function DealerDisplay({
   return (
     <div className="w-full flex flex-col md:flex-row gap-4 items-start">
       {showCurrentCard && (
-        <div className="flex-1">
-          <Card className="w-[clamp(220px,28vw,400px)] aspect-[3/4] md:w-[clamp(140px,18vw,250px)] md:aspect-[250/298] overflow-hidden border-2 border-primary bg-card">
+        <div className="flex-1 flex justify-center items-center">
+          <Card
+            className="
+              w-[clamp(180px,20vw,270px)] 
+              aspect-[3/4] 
+              max-w-full 
+              max-h-[90vh] 
+              overflow-hidden 
+              border-2 border-primary 
+              bg-card
+            "
+          >
             {currentCard ? (
               <div className="relative w-full h-full">
                 <Image
@@ -39,6 +49,7 @@ export function DealerDisplay({
               </div>
             )}
           </Card>
+
         </div>
       )}
 

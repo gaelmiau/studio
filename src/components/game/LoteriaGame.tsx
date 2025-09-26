@@ -287,7 +287,7 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
         {/* CARTA ACTUAL - centro */}
         <div className="flex justify-center col-span-1 md:col-span-5">
           <div
-            className="w-[clamp(220px,28vw,400px)] aspect-[3/4] md:w-[clamp(140px,18vw,250px)]"
+            className="w-[clamp(180px,17vw,250px)] aspect-[3/4] md:w-[clamp(140px,18vw,250px)]"
           >
             <DealerDisplay
               currentCard={currentCard}
