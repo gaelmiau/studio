@@ -316,11 +316,11 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
       {/* HISTORIAL: ocupa todo el ancho en móvil, y solo centro+derecha en escritorio */}
       <div className="grid grid-cols-1 md:grid-cols-12 w-full mt-6">
         <div className="col-span-1 md:col-start-4 md:col-span-9 flex justify-center">
-          {/* Contenedor scrollable */}
-          <div className="w-full overflow-auto">
+          {/* Contenedor ajustado al contenido */}
+          <div className="w-auto flex justify-center">
             <DealerDisplay
               currentCard={null}
-              history={uniqueHistory.slice(0, -1)}
+              history={uniqueHistory.slice(-3)} // solo las 3 más recientes
               showCurrentCard={false}
               showHistory={true}
             />
