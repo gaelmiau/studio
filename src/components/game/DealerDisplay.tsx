@@ -60,29 +60,31 @@ export function DealerDisplay({
         <div className="flex-1 min-w-0">
           <Card className="h-full">
             <CardContent className="p-2">
-              <ScrollArea className="w-full h-[90px]">
-                <div className="flex flex-row gap-2 p-2 justify-center">
-                  {[...history].reverse().map((card, idx) => (
-                    <div
-                      key={`${card.id}-${idx}`}
-                      className="w-[50px] h-[70px] relative rounded-md overflow-hidden border border-border"
-                    >
-                      <Image
-                        src={card.imageUrl}
-                        alt={card.name}
-                        width={50}
-                        height={70}
-                        className="object-cover"
-                      />
-                    </div>
-                  ))}
-                </div>
-                <ScrollBar orientation="horizontal" />
-              </ScrollArea>
+              <div className="w-full h-[clamp(60px,12vw,90px)] flex flex-row gap-2 p-2 justify-center">
+                {[...history].reverse().map((card, idx) => (
+                  <div
+                    key={`${card.id}-${idx}`}
+                    className="
+                w-[clamp(35px,6vw,50px)]
+                aspect-[3/4]
+                relative rounded-md 
+                overflow-hidden border border-border
+              "
+                  >
+                    <Image
+                      src={card.imageUrl}
+                      alt={card.name}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                ))}
+              </div>
             </CardContent>
           </Card>
         </div>
       )}
+
     </div>
   );
 }
