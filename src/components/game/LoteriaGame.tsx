@@ -263,7 +263,7 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
                 </p>
               )}
 
-              {/* Cambio de tipo de juego */}
+              {/* Cambio de tipo de juego 
               <Select
                 onValueChange={(value) => {
                   console.log("Modo de juego seleccionado:", value);
@@ -280,20 +280,33 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
                   <SelectItem value="horizontal">Horizontal</SelectItem>
                 </SelectContent>
               </Select>
+              */}
             </div>
           </div>
         </div>
 
-        {/* CARTA ACTUAL - centro */}
-        <div className="flex justify-center col-span-1 md:col-span-5">
-          <div
-            className="w-[clamp(180px,17vw,250px)] aspect-[3/4] md:w-[clamp(140px,18vw,250px)]"
-          >
+        {/* COLUMNA CENTRAL: historial + carta actual */}
+        <div className="flex flex-col items-center gap-6 col-span-1 md:col-span-5">
+
+          {/* HISTORIAL (solo 3 cartas recientes) */}
+          <div className="w-auto flex justify-center">
             <DealerDisplay
-              currentCard={currentCard}
-              showCurrentCard={true}
-              showHistory={false}
+              currentCard={null}
+              history={uniqueHistory.slice(-3)} // 3 últimas cartas
+              showCurrentCard={false}
+              showHistory={true}
             />
+          </div>
+
+          {/* CARTA ACTUAL */}
+          <div className="flex justify-center items-center w-full h-full">
+            <div className="w-full max-w-[300px] aspect-[3/4]">
+              <DealerDisplay
+                currentCard={currentCard}
+                showCurrentCard={true}
+                showHistory={false}
+              />
+            </div>
           </div>
         </div>
 
@@ -313,20 +326,6 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
         </div>
       </div>
 
-      {/* HISTORIAL: ocupa todo el ancho en móvil, y solo centro+derecha en escritorio */}
-      <div className="grid grid-cols-1 md:grid-cols-12 w-full mt-6">
-        <div className="col-span-1 md:col-start-4 md:col-span-9 flex justify-center">
-          {/* Contenedor ajustado al contenido */}
-          <div className="w-auto flex justify-center">
-            <DealerDisplay
-              currentCard={null}
-              history={uniqueHistory.slice(-3)} // solo las 3 más recientes
-              showCurrentCard={false}
-              showHistory={true}
-            />
-          </div>
-        </div>
-      </div>
 
       {/* Modal que muestra el ganador */}
       <WinnerModal

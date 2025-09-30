@@ -19,15 +19,19 @@ export function DealerDisplay({
   showHistory = true,
 }: DealerDisplayProps) {
   return (
-    <div className="w-full flex flex-col md:flex-row gap-4 items-start">
+    <div
+      className={`
+        w-full flex flex-col md:flex-row 
+        gap-4 items-center md:items-start
+      `}
+    >
+      {/* Carta actual */}
       {showCurrentCard && (
-        <div className="flex-1 flex justify-center items-center">
+        <div className="flex justify-center items-center w-full">
           <Card
             className="
-              w-[clamp(180px,20vw,270px)] 
-              aspect-[3/4] 
-              max-w-full 
-              max-h-[90vh] 
+              w-[clamp(160px,20vw,250px)]
+              aspect-[3/4]
               overflow-hidden 
               border-2 border-primary 
               bg-card
@@ -39,7 +43,6 @@ export function DealerDisplay({
                   src={currentCard.imageUrl}
                   alt={currentCard.name}
                   fill
-                  className="object-cover"
                   priority
                 />
               </div>
@@ -49,19 +52,21 @@ export function DealerDisplay({
               </div>
             )}
           </Card>
-
         </div>
       )}
 
+      {/* Historial */}
       {showHistory && (
         <div className="flex-1 min-w-0">
-          <h3 className="font-headline text-xl text-center mb-2"></h3> {/* Historial de Cartas */}
           <Card className="h-full">
             <CardContent className="p-2">
               <ScrollArea className="w-full h-[90px]">
-                <div className="flex flex-row gap-2 p-2 overflow-x-auto w-full">
+                <div className="flex flex-row gap-2 p-2 justify-center">
                   {[...history].reverse().map((card, idx) => (
-                    <div key={`${card.id}-${idx}`} className="w-[50px] h-[70px] relative rounded-md overflow-hidden border border-border">
+                    <div
+                      key={`${card.id}-${idx}`}
+                      className="w-[50px] h-[70px] relative rounded-md overflow-hidden border border-border"
+                    >
                       <Image
                         src={card.imageUrl}
                         alt={card.name}
