@@ -299,14 +299,12 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
           </div>
 
           {/* CARTA ACTUAL */}
-          <div className="flex justify-center items-center w-full h-full">
-            <div className="w-full max-w-[300px] aspect-[3/4]">
-              <DealerDisplay
-                currentCard={currentCard}
-                showCurrentCard={true}
-                showHistory={false}
-              />
-            </div>
+          <div className="w-[clamp(180px,17vw,250px)] aspect-[3/4] md:w-[clamp(140px,18vw,250px)]">
+            <DealerDisplay
+              currentCard={currentCard}
+              showCurrentCard={true}
+              showHistory={false}
+            />
           </div>
         </div>
 

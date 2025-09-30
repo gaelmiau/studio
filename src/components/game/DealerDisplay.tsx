@@ -21,8 +21,7 @@ export function DealerDisplay({
   return (
     <div
       className={`
-        w-full flex flex-col md:flex-row 
-        gap-4 items-center md:items-start
+        flex flex-col gap-2 md:flex-row md:gap-4 items-center md:items-start
       `}
     >
       {/* Carta actual */}
