@@ -228,10 +228,10 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
 
   useEffect(() => {
     const interval = setInterval(() => {
-      if (Date.now() - lastActivity > 5_000) { // 1 minuto sin actividad
+      if (Date.now() - lastActivity > 5_000) { // tiempo de inactividad (5s)
         setShowIdleModal(true);
       }
-    }, 5_000); // revisa cada 10s
+    }, 5_000);
 
     return () => clearInterval(interval);
   }, [lastActivity]);
@@ -365,7 +365,6 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
       />
 
       {/* Modal de inactividad */}
-
       <IdleModal
         open={showIdleModal}
         onStay={() => {
