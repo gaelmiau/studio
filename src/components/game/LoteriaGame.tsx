@@ -228,10 +228,10 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
 
   useEffect(() => {
     const interval = setInterval(() => {
-      if (Date.now() - lastActivity > 5_000) { // tiempo de inactividad (5s)
+      if (Date.now() - lastActivity > 90_000) { // tiempo de inactividad (2m)
         setShowIdleModal(true);
       }
-    }, 5_000);
+    }, 15_000); // si no hay actividad, sale 5s después
 
     return () => clearInterval(interval);
   }, [lastActivity]);
@@ -279,6 +279,33 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
                       Terminar Juego
                     </Button>
                   )}
+
+                  {/* Cambio de tipo de juego */}
+                  <Select
+                    onValueChange={async (value) => {
+                      await updateRoom(roomId, {
+                        gameState: {
+                          ...roomData.gameState,
+                          gameMode: value, // 🔹 Guardamos el modo aquí
+                        },
+                      });
+                    }}
+                    defaultValue={roomData.gameState?.gameMode ?? ""}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Seleccionar modo de juego" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="full">Tradicional</SelectItem>
+                      <SelectItem value="vertical">Filas</SelectItem>
+                      <SelectItem value="horizontal">Columnas</SelectItem>
+                      <SelectItem value="diagonal">Diagonales</SelectItem>
+                      <SelectItem value="corners">Esquinas</SelectItem>
+                      <SelectItem value="square">Cuadrado</SelectItem>
+                    </SelectContent>
+                  </Select>
+
+
                 </>
               )}
 
@@ -291,28 +318,11 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
               {/* Mensaje para jugadores que no son anfitrión */}
               {!isHost && gameState.host && !gameState.isGameActive && !gameState.winner && (
                 <p className="text-center text-muted-foreground p-2 bg-muted rounded-md">
+                  <span className="font-bold">{gameState.host}</span> Modo de juego:
                   <span className="font-bold">{gameState.host || "Anfitrión"}</span> es el anfitrión. Esperando...
                 </p>
               )}
 
-              {/* Cambio de tipo de juego 
-              <Select
-                onValueChange={(value) => {
-                  console.log("Modo de juego seleccionado:", value);
-                  // Aquí podrías actualizar en Firebase el tipo de juego elegido
-                  // por ejemplo: updateRoom(roomId, { gameState: { ...gameState, gameMode: value } });
-                }}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Seleccionar modo de juego" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="full">Tablero lleno (16 cartas)</SelectItem>
-                  <SelectItem value="vertical">Vertical</SelectItem>
-                  <SelectItem value="horizontal">Horizontal</SelectItem>
-                </SelectContent>
-              </Select>
-              */}
             </div>
           </div>
         </div>
