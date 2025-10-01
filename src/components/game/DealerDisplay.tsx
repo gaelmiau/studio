@@ -64,11 +64,11 @@ export function DealerDisplay({
                   <div
                     key={`${card.id}-${idx}`}
                     className="
-                w-[clamp(35px,6vw,50px)]
-                aspect-[3/4]
-                relative rounded-md 
-                overflow-hidden border border-border
-              "
+                      w-[clamp(35px,6vw,50px)]
+                      aspect-[3/4]
+                      relative rounded-md 
+                      overflow-hidden border border-border
+                    "
                   >
                     <Image
                       src={card.imageUrl}

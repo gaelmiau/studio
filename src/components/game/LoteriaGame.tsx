@@ -68,7 +68,7 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
 
       let winner = roomData.gameState.winner;
       let isGameActive = roomData.gameState.isGameActive;
-      if (checkWin(newMarkedIndices, player.board, calledCardIds)) {
+      if (checkWin(newMarkedIndices, player.board, calledCardIds, roomData.gameState.gameMode)) {
         winner = playerName;
         isGameActive = false;
       }
@@ -163,7 +163,7 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
             calledCardIds: newCalledCardIds,
           },
         });
-      }, 5000); // <-- 5 segundos entre cartas
+      }, 1000); // <-- 5 segundos entre cartas CAMBIAR
     }
 
     return () => {
@@ -228,10 +228,10 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
 
   useEffect(() => {
     const interval = setInterval(() => {
-      if (Date.now() - lastActivity > 90_000) { // tiempo de inactividad (2m)
+      if (Date.now() - lastActivity > 90_000) { // tiempo de inactividad (1m 30s)
         setShowIdleModal(true);
       }
-    }, 15_000); // si no hay actividad, sale 5s después
+    }, 15_000); // si no hay actividad, sale 15s después
 
     return () => clearInterval(interval);
   }, [lastActivity]);
@@ -286,19 +286,19 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
                       await updateRoom(roomId, {
                         gameState: {
                           ...roomData.gameState,
-                          gameMode: value, // 🔹 Guardamos el modo aquí
+                          gameMode: value, // Guardamos el modo aquí
                         },
                       });
                     }}
                     defaultValue={roomData.gameState?.gameMode ?? ""}
                   >
-                    <SelectTrigger className="w-full">
+                    <SelectTrigger className="w-full" disabled={gameState.isGameActive}>
                       <SelectValue placeholder="Seleccionar modo de juego" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="full">Tradicional</SelectItem>
-                      <SelectItem value="vertical">Filas</SelectItem>
-                      <SelectItem value="horizontal">Columnas</SelectItem>
+                      <SelectItem value="horizontal">Filas</SelectItem>
+                      <SelectItem value="vertical">Columnas</SelectItem>
                       <SelectItem value="diagonal">Diagonales</SelectItem>
                       <SelectItem value="corners">Esquinas</SelectItem>
                       <SelectItem value="square">Cuadrado</SelectItem>

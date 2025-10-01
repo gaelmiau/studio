@@ -82,10 +82,7 @@ export const WINNING_PATTERNS: number[][] = [
   // Esquinas
   [0, 3, 12, 15],
   // Cuadrado central
-  [0, 1, 4, 5],
-  [2, 3, 6, 7],
-  [8, 9, 12, 13],
-  [10, 11, 14, 15],
+  [5, 6, 9, 10],
 ];
 
 /**
@@ -126,11 +123,53 @@ export function createDeck(): Card[] {
 export function checkWin(
   markedIndices: number[],
   board: Card[],
-  calledCardIds: number[]
+  calledCardIds: number[],
+  gameMode: string = "full"
 ): boolean {
-  // Todas las cartas marcadas deben estar en las llamadas y deben ser 16
-  return (
-    markedIndices.length === 16 &&
-    markedIndices.every(idx => calledCardIds.includes(board[idx].id))
+  // Validar que las cartas marcadas estén en las llamadas
+  const validMarks = markedIndices.every(
+    (idx) => calledCardIds.includes(board[idx].id)
   );
+  if (!validMarks) return false;
+
+  switch (gameMode) {
+    case "full":
+      return markedIndices.length === 16;
+
+    case "horizontal": {
+      const rowPatterns = WINNING_PATTERNS.slice(0, 4);
+      return rowPatterns.some((pattern) =>
+        pattern.every((idx) => markedIndices.includes(idx))
+      );
+    }
+
+    case "vertical": {
+      const colPatterns = WINNING_PATTERNS.slice(4, 8);
+      return colPatterns.some((pattern) =>
+        pattern.every((idx) => markedIndices.includes(idx))
+      );
+    }
+
+    case "diagonal": {
+      const diagPatterns = WINNING_PATTERNS.slice(8, 10);
+      return diagPatterns.some((pattern) =>
+        pattern.every((idx) => markedIndices.includes(idx))
+      );
+    }
+
+    case "corners": {
+      const corners = WINNING_PATTERNS[10];
+      return corners.every((idx) => markedIndices.includes(idx));
+    }
+
+    case "square": {
+      const squarePatterns = WINNING_PATTERNS.slice(11);
+      return squarePatterns.some((pattern) =>
+        pattern.every((idx) => markedIndices.includes(idx))
+      );
+    }
+
+    default:
+      return false;
+  }
 }
