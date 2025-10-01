@@ -16,6 +16,7 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { IdleModal } from "./IdleModal";
+import { getRestriction } from "@/lib/loteria";
 
 interface LoteriaGameProps {
   roomId: string;
@@ -59,6 +60,17 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
     const { calledCardIds } = roomData.gameState;
     const isCalled = calledCardIds.includes(card.id);
 
+    const row = Math.floor(index / 4);
+    const col = index % 4;
+
+    // Bloquear clics fuera de la restricción del modo
+    if (!isAllowed({ row, col })) return;
+
+    // Si es la primera carta y el modo no es "full", la guardamos
+    if (!firstCard && isCalled) {
+      setFirstCard({ row, col });
+    }
+
     if (isCalled && !player.markedIndices.includes(index)) {
       const newMarkedIndices = [...player.markedIndices, index].sort((a, b) => a - b);
       const updatedPlayers = {
@@ -84,14 +96,23 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
     }
   };
 
+
+
   // Iniciar juego (solo host)
   const startGame = async () => {
     if (!isHost) return;
+
+    if (!selectedMode) {
+      alert("Debes seleccionar un modo de juego antes de iniciar.");
+      return;
+    }
+
     const newDeck = createDeck();
     const updatedPlayers = { ...roomData.players };
     Object.keys(updatedPlayers).forEach(pName => {
       updatedPlayers[pName].markedIndices = [];
     });
+
     await updateRoom(roomId, {
       players: updatedPlayers,
       gameState: {
@@ -100,21 +121,26 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
         calledCardIds: [newDeck[0].id],
         isGameActive: true,
         winner: null,
+        gameMode: selectedMode, // asegúrate que se use
         timestamp: Date.now()
       }
     });
+
     setRanking([]);
+    setFirstCard(null);
   };
+
 
   // Reiniciar juego (solo host)
   const resetGame = async () => {
     if (!isHost) return;
-    const newDeck = createDeck();
+
     const updatedPlayers = { ...roomData.players };
     Object.keys(updatedPlayers).forEach(pName => {
       updatedPlayers[pName].board = generateBoard();
       updatedPlayers[pName].markedIndices = [];
     });
+
     await updateRoom(roomId, {
       players: updatedPlayers,
       gameState: {
@@ -123,11 +149,16 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
         winner: null,
         deck: [],
         calledCardIds: [],
+        gameMode: null, // limpia el modo en Firebase
         timestamp: Date.now()
       }
     });
+
     setRanking([]);
+    setFirstCard(null);
+    setSelectedMode(""); // resetea el Select
   };
+
 
   // Cantada automática de cartas (solo host)
   useEffect(() => {
@@ -163,7 +194,7 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
             calledCardIds: newCalledCardIds,
           },
         });
-      }, 1000); // <-- 5 segundos entre cartas CAMBIAR
+      }, 100); // <-- 5 segundos entre cartas CAMBIAR
     }
 
     return () => {
@@ -237,7 +268,16 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
   }, [lastActivity]);
 
 
+  // Restricciones de marcado según modo de juego
+  const [firstCard, setFirstCard] = useState<{ row: number; col: number } | null>(null);
 
+  const isAllowed = (card: { row: number; col: number }) => {
+    if (!firstCard) return true; // hasta que cliques la primera
+    const restriction = getRestriction(roomData?.gameState?.gameMode || "full", firstCard);
+    return restriction(card);
+  };
+
+  const [selectedMode, setSelectedMode] = useState<string>(""); // empieza vacío
 
   return (
     <>
@@ -270,9 +310,25 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
                   {gameState.isGameActive && !gameState.winner && (
                     <Button
                       onClick={async () => {
-                        await updateRoom(roomId, {
-                          gameState: { ...gameState, isGameActive: false },
+                        if (!isHost) return;
+
+                        // Reinicia solo cartas y firstCard, pero conserva el modo
+                        const updatedPlayers = { ...roomData.players };
+                        Object.keys(updatedPlayers).forEach(pName => {
+                          updatedPlayers[pName].markedIndices = [];
                         });
+
+                        await updateRoom(roomId, {
+                          players: updatedPlayers,
+                          gameState: {
+                            ...gameState,
+                            isGameActive: false,
+                            winner: null,
+                            calledCardIds: [],
+                          }
+                        });
+
+                        setFirstCard(null); // reinicia carta inicial
                       }}
                       variant="destructive"
                     >
@@ -282,15 +338,16 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
 
                   {/* Cambio de tipo de juego */}
                   <Select
+                    value={selectedMode}
                     onValueChange={async (value) => {
+                      setSelectedMode(value); // actualiza el estado local
                       await updateRoom(roomId, {
                         gameState: {
                           ...roomData.gameState,
-                          gameMode: value, // Guardamos el modo aquí
+                          gameMode: value, // guarda en Firebase
                         },
                       });
                     }}
-                    defaultValue={roomData.gameState?.gameMode ?? ""}
                   >
                     <SelectTrigger className="w-full" disabled={gameState.isGameActive}>
                       <SelectValue placeholder="Seleccionar modo de juego" />
@@ -318,7 +375,6 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
               {/* Mensaje para jugadores que no son anfitrión */}
               {!isHost && gameState.host && !gameState.isGameActive && !gameState.winner && (
                 <p className="text-center text-muted-foreground p-2 bg-muted rounded-md">
-                  <span className="font-bold">{gameState.host}</span> Modo de juego:
                   <span className="font-bold">{gameState.host || "Anfitrión"}</span> es el anfitrión. Esperando...
                 </p>
               )}
@@ -360,6 +416,7 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
               onCardClick={handleCardClick}
               markedIndices={player.markedIndices}
               calledCardIds={Array.isArray(gameState.calledCardIds) ? gameState.calledCardIds : []}
+              isAllowed={isAllowed}
             />
           </div>
 

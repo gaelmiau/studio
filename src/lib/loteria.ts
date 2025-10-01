@@ -173,3 +173,47 @@ export function checkWin(
       return false;
   }
 }
+// Genera una función de restricción basada en el modo de juego y la primera carta marcada
+export function getRestriction(
+  mode: string,
+  firstCard: { row: number; col: number }
+): (pos: { row: number; col: number }) => boolean {
+  switch (mode) {
+    case "horizontal": // solo esa fila
+      return (pos) => pos.row === firstCard.row;
+
+    case "vertical": // solo esa columna
+      return (pos) => pos.col === firstCard.col;
+
+    case "diagonal": {
+      // Definimos las dos diagonales posibles
+      const diagonals = [
+        [0, 5, 10, 15], // diagonal principal
+        [3, 6, 9, 12]   // diagonal secundaria
+      ];
+
+      // Convertimos la posición de la primera carta a índice (0-15)
+      const firstIndex = firstCard.row * 4 + firstCard.col;
+
+      // Seleccionamos la diagonal que contiene la primera carta
+      const activeDiagonal =
+        diagonals.find((diag) => diag.includes(firstIndex)) || [];
+
+      // Retornamos la función de restricción
+      return (pos) => activeDiagonal.includes(pos.row * 4 + pos.col);
+    }
+
+    case "corners": // las 4 esquinas del tablero
+      return (pos) =>
+        (pos.row === 0 || pos.row === 3) &&
+        (pos.col === 0 || pos.col === 3);
+
+    case "square": // cuadrado de 2x2 donde está la primera carta
+      return (pos) =>
+        Math.abs(pos.row - firstCard.row) <= 1 &&
+        Math.abs(pos.col - firstCard.col) <= 1;
+
+    default: // "full" → libre
+      return () => true;
+  }
+}
