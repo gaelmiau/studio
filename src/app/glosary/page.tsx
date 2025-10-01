@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { CARDS } from "@/lib/loteria";
-import { Book } from "lucide-react";
+import { BookOpen, Fullscreen } from "lucide-react";
 
 export default function GlosaryPage() {
   const router = useRouter();
@@ -15,7 +15,7 @@ export default function GlosaryPage() {
       {/* Encabezado */}
       <div className="mb-8 text-center">
         <h1 className="text-3xl font-bold flex items-center justify-center gap-2">
-          <Book className="w-7 h-7" />
+          <BookOpen className="w-7 h-7" />
           Glosario de Cartas
         </h1>
         <p className="text-muted-foreground mt-2">
@@ -42,12 +42,12 @@ export default function GlosaryPage() {
             <CardContent>
               <div className="flex flex-col sm:flex-row gap-4">
                 {/* Imagen de la carta */}
-                <div className="w-full sm:w-1/3 flex items-center justify-center">
+                <div className="w-full sm:w-1/2 flex items-center justify-center">
                   <Image
                     src={card.imageUrl}
                     alt={card.name}
-                    width={120}
-                    height={180}
+                    width={200}
+                    height={260}
                     className="rounded-md border"
                   />
                 </div>
