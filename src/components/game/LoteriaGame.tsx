@@ -15,7 +15,7 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-
+import { IdleModal } from "./IdleModal";
 
 interface LoteriaGameProps {
   roomId: string;
@@ -34,6 +34,11 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
     : undefined;
   const isHost = gameState?.host === playerName;
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Manejo de inactividad
+  const [lastActivity, setLastActivity] = useState(Date.now());
+  const [showIdleModal, setShowIdleModal] = useState(false);
+
 
   // Actualiza ranking cuando hay ganador
   useEffect(() => {
@@ -206,6 +211,33 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
     setRanking([]);
   };
 
+  // Manejo de inactividad
+  useEffect(() => {
+    const resetActivity = () => setLastActivity(Date.now());
+
+    window.addEventListener("click", resetActivity);
+    window.addEventListener("keydown", resetActivity);
+    window.addEventListener("mousemove", resetActivity);
+
+    return () => {
+      window.removeEventListener("click", resetActivity);
+      window.removeEventListener("keydown", resetActivity);
+      window.removeEventListener("mousemove", resetActivity);
+    };
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (Date.now() - lastActivity > 5_000) { // 1 minuto sin actividad
+        setShowIdleModal(true);
+      }
+    }, 5_000); // revisa cada 10s
+
+    return () => clearInterval(interval);
+  }, [lastActivity]);
+
+
+
 
   return (
     <>
@@ -331,6 +363,20 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
         ranking={ranking}
         onRestart={isHost ? resetGame : undefined}
       />
+
+      {/* Modal de inactividad */}
+
+      <IdleModal
+        open={showIdleModal}
+        onStay={() => {
+          setShowIdleModal(false);
+          setLastActivity(Date.now());
+        }}
+        onExit={() => {
+          window.location.href = "/"; // vuelve al login
+        }}
+      />
+
     </>
   );
 
