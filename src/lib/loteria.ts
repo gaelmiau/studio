@@ -186,22 +186,23 @@ export function getRestriction(
       return (pos) => pos.col === firstCard.col;
 
     case "diagonal": {
-      // Definimos las dos diagonales posibles
       const diagonals = [
         [0, 5, 10, 15], // diagonal principal
         [3, 6, 9, 12]   // diagonal secundaria
       ];
 
-      // Convertimos la posición de la primera carta a índice (0-15)
+      if (!firstCard) {
+        // Al inicio del juego, ambas diagonales son clicleables
+        const activeIndices = [...diagonals[0], ...diagonals[1]];
+        return (pos) => activeIndices.includes(pos.row * 4 + pos.col);
+      }
+
+      // Una vez se cliquea la primera carta, se bloquea la otra diagonal
       const firstIndex = firstCard.row * 4 + firstCard.col;
-
-      // Seleccionamos la diagonal que contiene la primera carta
-      const activeDiagonal =
-        diagonals.find((diag) => diag.includes(firstIndex)) || [];
-
-      // Retornamos la función de restricción
+      const activeDiagonal = diagonals.find((diag) => diag.includes(firstIndex)) || [];
       return (pos) => activeDiagonal.includes(pos.row * 4 + pos.col);
     }
+
 
     case "corners": // las 4 esquinas del tablero
       return (pos) =>

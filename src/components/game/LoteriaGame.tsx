@@ -279,6 +279,7 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
 
   const [selectedMode, setSelectedMode] = useState<string>(""); // empieza vacío
 
+
   return (
     <>
       {/* Grid principal: cambia de 1 columna en móvil a 12 columnas en escritorio */}
