@@ -35,7 +35,6 @@ const GAME_MODE_LABELS: Record<string, string> = {
 
 export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) {
   const [ranking, setRanking] = useState<{ name: string; seleccionadas: number }[]>([]);
-
   const gameState = roomData?.gameState ?? null;
   const allPlayers = roomData?.players ?? {};
   const rawPlayer = allPlayers[playerName];
@@ -44,6 +43,8 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
     : undefined;
   const isHost = gameState?.host === playerName;
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  // Restricciones de marcado según modo de juego
+  const [firstCard, setFirstCard] = useState<{ row: number; col: number } | null>(null);
 
   // Manejo de inactividad
   const [lastActivity, setLastActivity] = useState(Date.now());
@@ -277,8 +278,7 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
   }, [lastActivity]);
 
 
-  // Restricciones de marcado según modo de juego
-  const [firstCard, setFirstCard] = useState<{ row: number; col: number } | null>(null);
+  
 
   const isAllowed = (card: { row: number; col: number }) => {
     const idx = card.row * 4 + card.col;
@@ -300,6 +300,13 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
       const squareIndices = [5, 6, 9, 10];
       return squareIndices.includes(idx);
     }
+    /*
+    // Cuadrado dinámico: usa getRestriction para cuadrado
+    if (roomData?.gameState?.gameMode === "square") {
+      const restriction = getRestriction("square", firstCard);
+      return restriction(card);
+    }
+      */
 
     // Otros modos
     if (!firstCard) return true;
@@ -371,11 +378,12 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
                   <Select
                     value={selectedMode}
                     onValueChange={async (value) => {
-                      setSelectedMode(value); // actualiza el estado local
+                      setSelectedMode(value);
+                      setFirstCard(null); // <-- aquí
                       await updateRoom(roomId, {
                         gameState: {
                           ...roomData.gameState,
-                          gameMode: value, // guarda en Firebase
+                          gameMode: value,
                         },
                       });
                     }}
@@ -417,8 +425,6 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
                   </p>
                 </div>
               )}
-
-              
             </div>
           </div>
         </div>

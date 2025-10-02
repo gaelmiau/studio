@@ -35,7 +35,7 @@ export default function GlosaryPage() {
         {CARDS.map((card) => (
           <Card key={card.id} className="shadow-md">
             <CardHeader>
-              <CardTitle className="text-lg font-semibold">
+              <CardTitle className="text-[26px] font-semibold">
                 {card.name}
               </CardTitle>
             </CardHeader>
@@ -53,7 +53,7 @@ export default function GlosaryPage() {
                 </div>
 
                 {/* Descripción desde loteria.ts */}
-                <div className="flex-1 text-sm text-muted-foreground">
+                <div className="flex-1 text-[20.8px] text-muted-foreground">
                   {card.description}
                 </div>
               </div>

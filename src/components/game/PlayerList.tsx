@@ -37,7 +37,7 @@ export function PlayerList({
 
         {/* Encabezado con botón toggle */}
         <CardTitle className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 text-[26px] font-bold">
             <Users />
             Jugadores (
             {playerArray.filter((p) => p.isOnline).length})  

@@ -21,7 +21,7 @@ export function Header() {
       <div className="container mx-auto flex flex-col items-center gap-2">
         <div className="flex items-center justify-center gap-4">
           <img src="/icono.png" alt="Logo" className="w-10 h-10 md:w-12 md:h-12" />
-          <h1 className="text-2xl md:text-4xl font-bold text-center tracking-tight text-blue-800">
+          <h1 className="text-[32px] font-bold text-center tracking-tight text-blue-800">
             Lotería Seguridad de la Información
           </h1>
         </div>
