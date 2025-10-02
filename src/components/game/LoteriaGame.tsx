@@ -294,12 +294,14 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
       const cornerIndices = [0, 3, 12, 15];
       return cornerIndices.includes(idx);
     }
+    
 
     // Cuadrado central: solo permite las cartas del cuadrado central
     if (roomData?.gameState?.gameMode === "square") {
       const squareIndices = [5, 6, 9, 10];
       return squareIndices.includes(idx);
     }
+      
     /*
     // Cuadrado dinámico: usa getRestriction para cuadrado
     if (roomData?.gameState?.gameMode === "square") {

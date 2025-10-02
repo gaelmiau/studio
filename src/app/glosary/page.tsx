@@ -14,7 +14,7 @@ export default function GlosaryPage() {
     <main className="flex min-h-screen flex-col bg-background text-foreground p-6">
       {/* Encabezado */}
       <div className="mb-8 text-center">
-        <h1 className="text-3xl font-bold flex items-center justify-center gap-2">
+        <h1 className="text-[32px] font-bold flex items-center justify-center gap-2">
           <BookOpen className="w-7 h-7" />
           Glosario de Cartas
         </h1>
