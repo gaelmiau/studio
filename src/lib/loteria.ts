@@ -214,6 +214,27 @@ export function getRestriction(
         Math.abs(pos.row - firstCard.row) <= 1 &&
         Math.abs(pos.col - firstCard.col) <= 1;
 
+    /*
+      // Cuadrado dinámico de 2x2 según la carta seleccionada
+      case "square":
+        if (!firstCard) {
+          // Permite seleccionar cualquier carta como inicio
+          return () => true;
+        }
+        // Calcula las posiciones del cuadrado 2x2 alrededor de la carta seleccionada
+        const { row, col } = firstCard;
+        const indices = [];
+        // Asegura que el cuadrado no se salga del tablero
+        const startRow = row === 3 ? 2 : row;
+        const startCol = col === 3 ? 2 : col;
+        for (let r = startRow; r < startRow + 2; r++) {
+          for (let c = startCol; c < startCol + 2; c++) {
+            indices.push(r * 4 + c);
+          }
+        }
+        return (pos) => indices.includes(pos.row * 4 + pos.col);
+    */
+
     default: // "full" → libre
       return () => true;
   }

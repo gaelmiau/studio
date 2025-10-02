@@ -24,6 +24,15 @@ interface LoteriaGameProps {
   roomData: any;
 }
 
+const GAME_MODE_LABELS: Record<string, string> = {
+  full: "Tradicional",
+  horizontal: "Filas",
+  vertical: "Columnas",
+  diagonal: "Diagonales",
+  corners: "Esquinas",
+  square: "Cuadrado",
+};
+
 export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) {
   const [ranking, setRanking] = useState<{ name: string; seleccionadas: number }[]>([]);
 
@@ -272,7 +281,28 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
   const [firstCard, setFirstCard] = useState<{ row: number; col: number } | null>(null);
 
   const isAllowed = (card: { row: number; col: number }) => {
-    if (!firstCard) return true; // hasta que cliques la primera
+    const idx = card.row * 4 + card.col;
+
+    // Diagonales: solo permite las cartas de las diagonales antes de seleccionar la primera carta
+    if (roomData?.gameState?.gameMode === "diagonal" && !firstCard) {
+      const diagonalIndices = [0, 5, 10, 15, 3, 6, 9, 12];
+      return diagonalIndices.includes(idx);
+    }
+
+    // Esquinas: solo permite las cartas de las esquinas
+    if (roomData?.gameState?.gameMode === "corners") {
+      const cornerIndices = [0, 3, 12, 15];
+      return cornerIndices.includes(idx);
+    }
+
+    // Cuadrado central: solo permite las cartas del cuadrado central
+    if (roomData?.gameState?.gameMode === "square") {
+      const squareIndices = [5, 6, 9, 10];
+      return squareIndices.includes(idx);
+    }
+
+    // Otros modos
+    if (!firstCard) return true;
     const restriction = getRestriction(roomData?.gameState?.gameMode || "full", firstCard);
     return restriction(card);
   };
@@ -354,12 +384,9 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
                       <SelectValue placeholder="Seleccionar modo de juego" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="full">Tradicional</SelectItem>
-                      <SelectItem value="horizontal">Filas</SelectItem>
-                      <SelectItem value="vertical">Columnas</SelectItem>
-                      <SelectItem value="diagonal">Diagonales</SelectItem>
-                      <SelectItem value="corners">Esquinas</SelectItem>
-                      <SelectItem value="square">Cuadrado</SelectItem>
+                      {Object.entries(GAME_MODE_LABELS).map(([value, label]) => (
+                        <SelectItem key={value} value={value}>{label}</SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
 
@@ -380,15 +407,27 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
                 </p>
               )}
 
+              {/* Mensaje de modo de juego */}
+              {!isHost && gameState.gameMode && (
+                <div className="mt-2 p-2 bg-primary/10 border border-primary/20 rounded-md text-center">
+                  <p className="text-sm">
+                    Modo: <span className="font-semibold">
+                      {GAME_MODE_LABELS[gameState.gameMode] || gameState.gameMode}
+                    </span>
+                  </p>
+                </div>
+              )}
+
+              
             </div>
           </div>
         </div>
 
         {/* COLUMNA CENTRAL: historial + carta actual */}
         <div className="flex flex-col items-center gap-6 col-span-1 md:col-span-5">
-
-          {/* HISTORIAL (solo 3 cartas recientes) */}
-          <div className="w-auto flex justify-center">
+          {/* Contenedor con ancho responsivo compartido */}
+          <div className="w-[clamp(180px,17vw,250px)] md:w-[clamp(140px,18vw,250px)]">
+            {/* HISTORIAL (solo 3 cartas recientes) */}
             <DealerDisplay
               currentCard={null}
               history={uniqueHistory.slice(-3)} // 3 últimas cartas
@@ -396,9 +435,8 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
               showHistory={true}
             />
           </div>
-
-          {/* CARTA ACTUAL */}
-          <div className="w-[clamp(180px,17vw,250px)] aspect-[3/4] md:w-[clamp(140px,18vw,250px)]">
+          <div className="w-[clamp(180px,17vw,250px)] md:w-[clamp(140px,18vw,250px)] aspect-[3/4]">
+            {/* CARTA ACTUAL */}
             <DealerDisplay
               currentCard={currentCard}
               showCurrentCard={true}

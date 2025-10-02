@@ -21,7 +21,6 @@ export default function RoomPage() {
 
   useEffect(() => {
     if (!roomId) return;
-    // Escucha los cambios en tiempo real de la sala
     const unsubscribe = listenRoom(roomId, (data) => {
       setRoomData(data);
       setLoading(false);
