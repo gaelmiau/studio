@@ -24,7 +24,7 @@ export function Header() {
       {/* Contenido principal: logo + título */}
       <div className="container mx-auto flex flex-col items-center gap-2">
         <div className="flex items-center justify-center gap-4">
-          <h1 className="text-[32px] font-bold text-center tracking-tight text-[#172136] font-lato">
+          <h1 className="font-lato text-[32px] text-[#172136] font-bold text-center">
             Lotería Seguridad de la Información
           </h1>
         </div>

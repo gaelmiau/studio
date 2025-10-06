@@ -13,6 +13,8 @@ export default {
         body: ['PT Sans', 'sans-serif'],
         headline: ['Playfair Display', 'serif'],
         code: ['monospace'],
+        sans: ['Lato', 'ui-sans-serif', 'system-ui'],
+        lato: ['Lato', 'sans-serif'],
       },
       colors: {
         background: 'hsl(var(--background))',
