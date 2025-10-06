@@ -35,6 +35,7 @@ export function DealerDisplay({
               border-2 border-primary 
               bg-card
             "
+            style={{ borderColor: "hsl(180.85, 61.74%, 22.55%)", backgroundColor: "hsl(240, 26.39%, 28.24%)" }} 
           >
             {currentCard ? (
               <div className="relative w-full h-full">
@@ -57,7 +58,7 @@ export function DealerDisplay({
       {/* Historial */}
       {showHistory && (
         <div className="flex-1 min-w-0">
-          <Card className="h-full">
+          <Card className="h-full" style={{ background: "hsl(240, 26.39%, 28.24%)" }}>
             <CardContent className="p-2">
               <div className="w-full h-[clamp(60px,12vw,90px)] flex flex-row gap-2 p-2 justify-center">
                 {[...history].reverse().map((card, idx) => (

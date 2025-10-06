@@ -98,7 +98,7 @@ export default function Home() {
       <Header />
       <main className="flex-grow container mx-auto p-4 md:p-6 flex items-center justify-center">
         <div className="w-full max-w-md">
-          <Card className="border-2 border-primary/50 shadow-lg">
+          <Card className="border-2" style={{ borderColor: "hsl(180.85, 61.74%, 22.55%)" }}>
             <CardHeader className="text-center">
               <img src="/loteria.png" alt="Lotería Logo" className="h-140 w-360" />
               <CardDescription className="pt-2 font-lato font-regular">Ingresa tu nombre y el código de la sala para jugar.</CardDescription>
