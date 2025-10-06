@@ -106,7 +106,7 @@ export default function Home() {
             <CardContent>
               <form onSubmit={handleJoinRoom} className="space-y-6">
                 <div className="space-y-2">
-                  <Label htmlFor="name" className="text-base">Tu Nombre</Label>
+                  <Label htmlFor="name" className="text-base">Nombre</Label>
                   <Input
                     id="name"
                     value={name}
