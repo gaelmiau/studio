@@ -100,8 +100,8 @@ export default function Home() {
         <div className="w-full max-w-md">
           <Card className="border-2 border-primary/50 shadow-lg">
             <CardHeader className="text-center">
-              <CardTitle className="text-3xl font-headline">¡Bienvenido!</CardTitle>
-              <CardDescription className="pt-2">Ingresa tu nombre y el código de la sala para jugar.</CardDescription>
+              <img src="/loteria.png" alt="Lotería Logo" className="h-140 w-360" />
+              <CardDescription className="pt-2 font-lato font-regular">Ingresa tu nombre y el código de la sala para jugar.</CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleJoinRoom} className="space-y-6">
@@ -144,6 +144,8 @@ export default function Home() {
           </Card>
         </div>
       </main>
+
+      {/* Footer fijo al final de la página */}
       <footer className="text-center p-4 text-muted-foreground text-sm">
         <p>Elaborado por Célula de Desarrollo de Contenidos DGTI Xalapa.</p>
       </footer>
