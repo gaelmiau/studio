@@ -35,7 +35,7 @@ export function DealerDisplay({
               border-2 border-primary 
               bg-card
             "
-            style={{ borderColor: "hsl(180.85, 61.74%, 22.55%)", backgroundColor: "hsl(240, 26.39%, 28.24%)" }} 
+            style={{ borderColor: "hsl(180.85, 61.74%, 22.55%)", backgroundColor: "hsl(240, 26.39%, 28.24%)", borderWidth: "1px" }} 
           >
             {currentCard ? (
               <div className="relative w-full h-full">
