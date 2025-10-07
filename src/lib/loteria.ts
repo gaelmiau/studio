@@ -5,7 +5,7 @@ export interface Card {
   description: string;
 }
 
-// A selection of 24 cards for the game
+// Cartas de la Lotería
 export const CARDS: Card[] = [
   { id: 1, name: "LA INFORMACIÓN", imageUrl: "/cards/1.jpg", description: "Lo que vale oro y no compartes con todos." },
   { id: 2, name: "EL USUARIO", imageUrl: "/cards/2.jpg", description: "El que con buen juicio y atención, es la primera línea de protección." },

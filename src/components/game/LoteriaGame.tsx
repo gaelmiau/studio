@@ -241,10 +241,18 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
 
   // Efecto para cantar la carta cuando cambia
   useEffect(() => {
-    if (cantaditoActivo && currentCard?.description && currentCard?.name) {
-      cantarCarta(currentCard.description);
+    if (cantaditoActivo && currentCard?.description) {
+      cantarCarta(currentCard.description, currentCard.name);
     }
   }, [currentCard, cantaditoActivo]);
+
+  /*
+useEffect(() => {
+    if (cantaditoActivo && currentCard?.description) {
+      cantarCartaConAudio(currentCard.description, currentCard.name);
+    }
+  }, [currentCard, cantaditoActivo]);
+  */
 
   // Reiniciar solo la tabla del jugador actual
   const resetPlayerBoard = async () => {
@@ -280,7 +288,7 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
 
   useEffect(() => {
     const interval = setInterval(() => {
-      if (Date.now() - lastActivity > 10_000) { // tiempo de inactividad (1m 30s)
+      if (Date.now() - lastActivity > 90_000) { // tiempo de inactividad (1m 30s)
         setShowIdleModal(true);
       }
     }, 15_000); // si no hay actividad, sale 15s después

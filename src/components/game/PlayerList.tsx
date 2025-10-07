@@ -37,7 +37,7 @@ export function PlayerList({
 
         {/* Encabezado con botón toggle */}
         <CardTitle className="flex items-center justify-between">
-          <div className="flex items-center gap-2 text-[26px] font-bold">
+          <div className="flex items-center gap-2 text-[24px] font-bold">
             <Users />
             Jugadores (
             {playerArray.filter((p) => p.isOnline).length})  
@@ -48,7 +48,7 @@ export function PlayerList({
             onClick={() => setIsExpanded(!isExpanded)}
             className="w-6 h-6 rounded-full flex items-center justify-center bg-[hsl(var(--primary))] text-white text-lg"
           >
-            {isExpanded ? <Minus className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+            {isExpanded ? <Minus className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
             
           </button>
         </CardTitle>
