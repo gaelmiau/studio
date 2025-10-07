@@ -3,13 +3,12 @@ export function Header() {
   return (
     <header className="relative py-1 px-4 md:px-8 border-b-2 border-primary/20 bg-[#bfbce2]">
       {/* Pleca arriba a la derecha */}
-      <div className="absolute top-0 right-0 flex items-center justify-center px-4 py-2 hidden lg:flex font-family: 'Gill Sans'"
+      <div className="absolute top-0 right-0 flex items-center justify-center px-4 py-2 hidden lg:flex font-sans"
            style={{
              background: '#18529D',
              padding: '3px 5px',
              fontSize: '18px',
              fontWeight: 'normal',
-             
            }}>
         <a
           href="https://uv.mx/"
