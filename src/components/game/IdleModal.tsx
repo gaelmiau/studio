@@ -23,15 +23,15 @@ export function IdleModal({ open, onStay, onExit }: IdleModalProps) {
 
   return (
     <Dialog open={open}>
-      <DialogContent className="max-w-sm">
+      <DialogContent className="max-w-sm" style={{ backgroundColor: "hsl(180.85 61.74% 22.55%)" }}>
         <DialogHeader>
           <DialogTitle>¿Sigues ahí?</DialogTitle>
           <DialogDescription>
-            Detectamos inactividad. Si no respondes, tu sesión terminará.
+            Detectamos inactividad. Si no respondes, tu sesión finalizará.
           </DialogDescription>
         </DialogHeader>
-        <div className="flex justify-end gap-2 mt-4">
-          <Button variant="outline" onClick={onStay}>
+        <div className="flex justify-end gap-2 mt-4" >
+          <Button variant="outline" onClick={onStay} style={{ backgroundColor: "hsl(337.89 81.2% 45.88%)" }}>
             Sí, sigo aquí
           </Button>
           <Button variant="destructive" onClick={onExit}>

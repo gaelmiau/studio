@@ -147,7 +147,10 @@ export default function Home() {
 
       {/* Footer fijo al final de la página */}
       <footer className="text-center p-4 text-muted-foreground text-sm">
-        <p>Elaborado por Célula de Desarrollo de Contenidos DGTI Xalapa.</p>
+        <div className="flex items-center justify-center gap-2">
+          <img src="/icono-CDC.png" alt="Célula de Desarrollo" className="h-7 " />
+          <p>Elaborado por Célula de Desarrollo de Contenidos DGTI Xalapa.</p>
+        </div>
       </footer>
     </div>
   );

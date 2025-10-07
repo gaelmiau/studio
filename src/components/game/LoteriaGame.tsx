@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/select";
 import { IdleModal } from "./IdleModal";
 import { getRestriction } from "@/lib/loteria";
+import { cantarCarta } from "@/lib/cantadito";
 
 interface LoteriaGameProps {
   roomId: string;
@@ -49,6 +50,9 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
   // Manejo de inactividad
   const [lastActivity, setLastActivity] = useState(Date.now());
   const [showIdleModal, setShowIdleModal] = useState(false);
+
+  // Cantadito
+  const [cantaditoActivo, setCantaditoActivo] = useState(false);
 
 
   // Actualiza ranking cuando hay ganador
@@ -204,7 +208,7 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
             calledCardIds: newCalledCardIds,
           },
         });
-      }, 100); // <-- 5 segundos entre cartas CAMBIAR
+      }, 5000); // <-- 5 segundos entre cartas CAMBIAR
     }
 
     return () => {
@@ -234,6 +238,13 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
   const uniqueHistory = calledCards.filter(
     (card, index, self) => self.findIndex(c => c.id === card.id) === index
   );
+
+  // Efecto para cantar la carta cuando cambia
+  useEffect(() => {
+    if (cantaditoActivo && currentCard?.description && currentCard?.name) {
+      cantarCarta(currentCard.description);
+    }
+  }, [currentCard, cantaditoActivo]);
 
   // Reiniciar solo la tabla del jugador actual
   const resetPlayerBoard = async () => {
@@ -269,7 +280,7 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
 
   useEffect(() => {
     const interval = setInterval(() => {
-      if (Date.now() - lastActivity > 90_000) { // tiempo de inactividad (1m 30s)
+      if (Date.now() - lastActivity > 10_000) { // tiempo de inactividad (1m 30s)
         setShowIdleModal(true);
       }
     }, 15_000); // si no hay actividad, sale 15s después
@@ -278,7 +289,7 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
   }, [lastActivity]);
 
 
-  
+
 
   const isAllowed = (card: { row: number; col: number }) => {
     const idx = card.row * 4 + card.col;
@@ -294,14 +305,14 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
       const cornerIndices = [0, 3, 12, 15];
       return cornerIndices.includes(idx);
     }
-    
+
 
     // Cuadrado central: solo permite las cartas del cuadrado central
     if (roomData?.gameState?.gameMode === "square") {
       const squareIndices = [5, 6, 9, 10];
       return squareIndices.includes(idx);
     }
-      
+
     /*
     // Cuadrado dinámico: usa getRestriction para cuadrado
     if (roomData?.gameState?.gameMode === "square") {
@@ -427,6 +438,14 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
                   </p>
                 </div>
               )}
+
+              {/* Botón Cantadito */}
+              <Button
+                variant={cantaditoActivo ? "default" : "outline"}
+                onClick={() => setCantaditoActivo((prev) => !prev)}
+              >
+                {cantaditoActivo ? "Desactivar Cantadito" : "Activar Cantadito"}
+              </Button>
             </div>
           </div>
         </div>
