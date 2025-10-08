@@ -54,7 +54,7 @@ export default function GlosaryPage() {
 
                 {/* Descripción desde loteria.ts */}
                 <div className="flex-1 text-[20.8px] text-muted-foreground">
-                  {card.description}
+                  {card.descriptionLong}
                 </div>
               </div>
             </CardContent>
