@@ -110,9 +110,19 @@ export function PlayerList({
                         player.name === currentPlayerName && "text-primary"
                       )}
                     >
+                      {/* 
                       {player.name}
-                      
                       {player.name === currentPlayerName && " (Tú)"}
+
+                      */}
+
+                      <span className="font-medium">
+                        <span className="text-[hsl(var(--foreground))]">{player.name}</span>
+                        {player.name === currentPlayerName && (
+                          <span className="text-[hsl(var(--primary))]"> (Tú)</span>
+                        )}
+                      </span>
+
                     </span>
                   </div>
                   {player.name === hostName && (
