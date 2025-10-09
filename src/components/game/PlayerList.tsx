@@ -45,7 +45,7 @@ export function PlayerList({
           {/* Bloque del ícono y texto */}
           <div
             className="flex items-center justify-center gap-2 font-bold"
-            style={{ fontSize: "clamp(10px, 5vw, 24px)" }}
+            style={{ fontSize: "clamp(10px, 5vw, 20px)" }}
           >
             <Users className="w-5 h-5 shrink-0 hidden md:inline" />
             <span className="whitespace-nowrap">
