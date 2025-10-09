@@ -297,6 +297,15 @@ useEffect(() => {
   }, [lastActivity]);
 
 
+  // Cuando el juego termina, resetea la carta inicial en todos los jugadores
+  useEffect(() => {
+    // Cuando el juego termina, resetea la carta inicial en todos los jugadores
+    if (!gameState.isGameActive) {
+      setFirstCard(null);
+    }
+  }, [gameState.isGameActive]);
+
+
 
 
   const isAllowed = (card: { row: number; col: number }) => {
