@@ -409,7 +409,7 @@ useEffect(() => {
                     value={selectedMode}
                     onValueChange={async (value) => {
                       setSelectedMode(value);
-                      setFirstCard(null); // <-- aquí
+                      setFirstCard(null); // resetea la carta inicial al cambiar modo
                       await updateRoom(roomId, {
                         gameState: {
                           ...roomData.gameState,
@@ -511,6 +511,7 @@ useEffect(() => {
       <WinnerModal
         open={!!gameState.winner}
         ranking={ranking}
+        gameMode={gameState.gameMode}
         onRestart={isHost ? resetGame : undefined}
       />
 

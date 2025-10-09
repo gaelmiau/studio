@@ -36,11 +36,21 @@ export function PlayerList({
         </div>
 
         {/* Encabezado con botón toggle */}
-        <CardTitle className="flex items-center justify-between">
-          <div className="flex items-center gap-2 text-[24px] font-bold">
-            <Users />
-            Jugadores (
-            {playerArray.filter((p) => p.isOnline).length})  
+        <CardTitle
+          className="
+            flex flex-wrap items-center justify-center text-center gap-3
+            sm:flex-nowrap
+          "
+        >
+          {/* Bloque del ícono y texto */}
+          <div
+            className="flex items-center justify-center gap-2 font-bold"
+            style={{ fontSize: "clamp(10px, 5vw, 24px)" }}
+          >
+            <Users className="w-5 h-5 shrink-0 hidden md:inline" />
+            <span className="whitespace-nowrap">
+              Jugadores ({playerArray.filter((p) => p.isOnline).length})
+            </span>
           </div>
 
           {/* Botón circular */}
@@ -48,10 +58,14 @@ export function PlayerList({
             onClick={() => setIsExpanded(!isExpanded)}
             className="w-6 h-6 rounded-full flex items-center justify-center bg-[hsl(var(--primary))] text-white text-lg"
           >
-            {isExpanded ? <Minus className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
-            
+            {isExpanded ? (
+              <Minus className="w-5 h-5" />
+            ) : (
+              <Plus className="w-5 h-5" />
+            )}
           </button>
         </CardTitle>
+
       </CardHeader>
 
       <CardContent>
@@ -97,11 +111,12 @@ export function PlayerList({
                       )}
                     >
                       {player.name}
+                      
                       {player.name === currentPlayerName && " (Tú)"}
                     </span>
                   </div>
                   {player.name === hostName && (
-                    <Crown className="w-5 h-5 text-yellow-500">
+                    <Crown className="w-5 h-6 text-yellow-500">
                       <title>Anfitrión</title>
                     </Crown>
                   )}

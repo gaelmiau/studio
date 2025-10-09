@@ -14,15 +14,18 @@ interface WinnerModalProps {
   open: boolean;
   ranking: { name: string; seleccionadas: number }[];
   onRestart?: () => void;
+  gameMode?: string; //  Dependiendo del modo de juego, podrías mostrar diferentes mensajes o estilos
 }
 
-export function WinnerModal({ open, onRestart, ranking }: WinnerModalProps) {
+export function WinnerModal({ open, onRestart, ranking, gameMode }: WinnerModalProps) {
+  const mostrarCartas = !gameMode || gameMode === "full"; // Solo en Tradicional
+
   return (
     <AlertDialog open={open}>
       <AlertDialogContent className="bg-card border-primary">
         <AlertDialogHeader>
           <AlertDialogTitle className="text-4xl font-headline text-primary text-center">
-            ¡¡Lotería!!
+            ¡Lotería!
           </AlertDialogTitle>
           <AlertDialogDescription asChild>
             <div className="text-center text-lg text-foreground pt-4">
@@ -33,7 +36,9 @@ export function WinnerModal({ open, onRestart, ranking }: WinnerModalProps) {
                     {idx === 0 && "🥇"}
                     {idx === 1 && "🥈"}
                     {idx === 2 && "🥉"}
-                    {` ${p.name} (${p.seleccionadas} cartas)`}
+                    {mostrarCartas
+                      ? ` ${p.name} (${p.seleccionadas} cartas)`
+                      : ` ${p.name}`}
                   </li>
                 ))}
               </ol>
