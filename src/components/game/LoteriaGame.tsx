@@ -208,7 +208,7 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
             calledCardIds: newCalledCardIds,
           },
         });
-      }, 5000); // <-- 5 segundos entre cartas CAMBIAR
+      }, 100); // <-- 5 segundos entre cartas CAMBIAR
     }
 
     return () => {

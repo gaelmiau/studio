@@ -9,6 +9,8 @@ import {
   AlertDialogFooter,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
+
 
 interface WinnerModalProps {
   open: boolean;
@@ -22,38 +24,73 @@ export function WinnerModal({ open, onRestart, ranking, gameMode }: WinnerModalP
 
   return (
     <AlertDialog open={open}>
-      <AlertDialogContent className="bg-card border-primary">
-        <AlertDialogHeader>
-          <AlertDialogTitle className="text-4xl font-headline text-primary text-center">
-            ¡Lotería!
-          </AlertDialogTitle>
-          <AlertDialogDescription asChild>
-            <div className="text-center text-lg text-foreground pt-4">
-              <div className="mb-2">Ranking final:</div>
-              <ol className="space-y-1">
-                {ranking.slice(0, 3).map((p, idx) => (
-                  <li key={p.name} className="font-bold">
-                    {idx === 0 && "🥇"}
-                    {idx === 1 && "🥈"}
-                    {idx === 2 && "🥉"}
-                    {mostrarCartas
-                      ? ` ${p.name} (${p.seleccionadas} cartas)`
-                      : ` ${p.name}`}
-                  </li>
-                ))}
-              </ol>
-            </div>
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <div className="text-6xl text-center p-4">🎉🎊🥳</div>
-        {onRestart && (
-          <AlertDialogFooter>
-            <Button onClick={onRestart} className="w-full" size="lg">
-              Jugar de Nuevo (Nuevas Tablas)
-            </Button>
-          </AlertDialogFooter>
-        )}
+      <AlertDialogContent
+        className="
+          bg-cover bg-center border-none
+          rounded-2xl shadow-lg overflow-hidden
+          text-white text-center
+          w-[90vw] max-w-[520px] sm:max-w-[480px] md:max-w-[500px] lg:max-w-[520px]
+          aspect-[16/10] sm:aspect-[16/10] xs:aspect-auto
+          transition-all duration-300 ease-in-out
+          flex flex-col justify-center items-center
+        "
+        style={{
+          backgroundImage: "url('/cuadroGanador.webp')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
+
+        <div className="px-[clamp(0.5rem, 3vw, 1.5rem)] py-[clamp(1rem, 4vw, 2rem)]">
+
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              <VisuallyHidden>Ganador del juego</VisuallyHidden>
+            </AlertDialogTitle>
+            <AlertDialogDescription asChild
+              className="flex flex-col justify-center items-center 
+                  text-[clamp(1rem, 2vw, 1.3rem)]
+                  leading-snug">
+              <div className="text-center text-lg text-black pt-[clamp(1rem, 10vw, 5rem)] text-[clamp(1.1rem, 2.5vw, 1.4rem)]">
+                <div className="mb-2">
+                  Ranking final:
+                </div>
+                <ol className="space-y-1">
+                  {ranking.slice(0, 3).map((p, idx) => (
+                    <li key={p.name} className="font-bold text-[clamp(1rem, 2vw, 1.3rem)]">
+                      {idx === 0 && "🥇"}
+                      {idx === 1 && "🥈"}
+                      {idx === 2 && "🥉"}
+                      {mostrarCartas
+                        ? ` ${p.name} (${p.seleccionadas} cartas)`
+                        : ` ${p.name}`}
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+        </div>
+
+        <div className="mt-auto">
+          {onRestart && (
+            <AlertDialogFooter className="flex justify-center mt-[clamp(0.8rem, 2vw, 1.5rem)]">
+              <Button onClick={onRestart} size="sm"
+                className="
+                  w-[clamp(10rem, 80vw, 20rem)]
+                  text-[clamp(0.9rem, 2vw, 1.1rem)]
+                  px-[clamp(1rem, 3vw, 2rem)] py-[clamp(0.4rem, 1vw, 0.8rem)]
+                  shadow-md
+                  transition-all duration-200 ease-in-out
+                " >
+                Jugar de Nuevo
+              </Button>
+            </AlertDialogFooter>
+          )}
+        </div>
       </AlertDialogContent>
     </AlertDialog>
+
+
   );
 }
