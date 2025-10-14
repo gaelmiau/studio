@@ -55,10 +55,11 @@ export function WinnerModal({ open, onRestart, ranking, gameMode }: WinnerModalP
                   className="
                     absolute left-1/2 top-1/2 translate-x-[-50%] translate-y-[-20%]
                     w-[clamp(220px,60vw,270px)] min-h-[120px] max-h-[210px]
-                    bg-white/80 rounded-xl shadow-lg flex flex-col justify-center items-center z-10
+                    bg-white/50 rounded-xl shadow-lg flex flex-col justify-center items-center z-10
                     px-6 py-4
                   "
                 >
+                  
                   <ol className="space-y-1">
                     {ranking.slice(0, 3).map((p, idx) => (
                       <li key={p.name} className="font-bold text-[clamp(1rem,2vw,1.3rem)]">

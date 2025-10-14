@@ -59,7 +59,6 @@ export default function GlosaryPage() {
                   text-muted-foreground 
                   text-base sm:text-lg md:text-xl lg:text-2xl 
                   leading-relaxed 
-                  text-justify
                 "
                 >
                   {card.descriptionLong}
