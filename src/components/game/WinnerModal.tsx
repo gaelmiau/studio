@@ -35,10 +35,12 @@ export function WinnerModal({ open, onRestart, ranking, gameMode }: WinnerModalP
           min-h-[340px]
         "
         style={{
-          backgroundImage: "url('/loteriaGanador.png')",
+          backgroundImage: "url('/loteriaGanadorFondo.png')",
           backgroundPosition: "center",
         }}
       >
+
+
         {/* Contenido principal: ranking */}
         <div className="flex-grow w-full flex flex-col justify-center items-center px-[clamp(0.5rem,3vw,1.5rem)] py-[clamp(1rem,4vw,2rem)]">
           <AlertDialogHeader>
@@ -50,19 +52,29 @@ export function WinnerModal({ open, onRestart, ranking, gameMode }: WinnerModalP
                   text-[clamp(1rem,2vw,1.3rem)]
                   leading-snug">
               <div className="text-center text-lg text-black pt-[clamp(1rem,10vw,5rem)] text-[clamp(1.1rem,2.5vw,1.4rem)]">
+                {/* Recuadro centrado para el ranking */}
+                <div
+                  className="
+            absolute left-1/2 top-1/2 translate-x-[-50%] translate-y-[-20%]
+            w-[clamp(220px,60vw,270px)] min-h-[120px] max-h-[210px]
+            bg-white/80 rounded-xl shadow-lg flex flex-col justify-center items-center z-10
+            px-6 py-4
+          "
+                >
+                  <ol className="space-y-1">
+                    {ranking.slice(0, 3).map((p, idx) => (
+                      <li key={p.name} className="font-bold text-[clamp(1rem,2vw,1.3rem)]">
+                        {idx === 0 && "🥇"}
+                        {idx === 1 && "🥈"}
+                        {idx === 2 && "🥉"}
+                        {mostrarCartas
+                          ? ` ${p.name} (${p.seleccionadas} cartas)`
+                          : ` ${p.name}`}
+                      </li>
+                    ))}
+                  </ol>
+                </div>
 
-                <ol className="space-y-1">
-                  {ranking.slice(0, 3).map((p, idx) => (
-                    <li key={p.name} className="font-bold text-[clamp(1rem,2vw,1.3rem)]">
-                      {idx === 0 && "🥇"}
-                      {idx === 1 && "🥈"}
-                      {idx === 2 && "🥉"}
-                      {mostrarCartas
-                        ? ` ${p.name} (${p.seleccionadas} cartas)`
-                        : ` ${p.name}`}
-                    </li>
-                  ))}
-                </ol>
               </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
