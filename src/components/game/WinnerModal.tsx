@@ -39,8 +39,6 @@ export function WinnerModal({ open, onRestart, ranking, gameMode }: WinnerModalP
           backgroundPosition: "center",
         }}
       >
-
-
         {/* Contenido principal: ranking */}
         <div className="flex-grow w-full flex flex-col justify-center items-center px-[clamp(0.5rem,3vw,1.5rem)] py-[clamp(1rem,4vw,2rem)]">
           <AlertDialogHeader>
@@ -55,11 +53,11 @@ export function WinnerModal({ open, onRestart, ranking, gameMode }: WinnerModalP
                 {/* Recuadro centrado para el ranking */}
                 <div
                   className="
-            absolute left-1/2 top-1/2 translate-x-[-50%] translate-y-[-20%]
-            w-[clamp(220px,60vw,270px)] min-h-[120px] max-h-[210px]
-            bg-white/80 rounded-xl shadow-lg flex flex-col justify-center items-center z-10
-            px-6 py-4
-          "
+                    absolute left-1/2 top-1/2 translate-x-[-50%] translate-y-[-20%]
+                    w-[clamp(220px,60vw,270px)] min-h-[120px] max-h-[210px]
+                    bg-white/80 rounded-xl shadow-lg flex flex-col justify-center items-center z-10
+                    px-6 py-4
+                  "
                 >
                   <ol className="space-y-1">
                     {ranking.slice(0, 3).map((p, idx) => (
