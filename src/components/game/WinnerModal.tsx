@@ -35,8 +35,7 @@ export function WinnerModal({ open, onRestart, ranking, gameMode }: WinnerModalP
           flex flex-col justify-center items-center
         "
         style={{
-          backgroundImage: "url('/cuadroGanador.webp')",
-          backgroundSize: "cover",
+          backgroundImage: "url('/loteriaGanador.png')",
           backgroundPosition: "center",
         }}
       >
