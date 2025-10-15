@@ -62,7 +62,7 @@ export function WinnerModal({ open, onRestart, ranking, gameMode }: WinnerModalP
                   
                   <ol className="space-y-1">
                     {ranking.slice(0, 3).map((p, idx) => (
-                      <li key={p.name} className="font-bold text-[clamp(1rem,2vw,1.3rem)]">
+                      <li key={p.name} className="font-bold text-[clamp(1rem,2vw,1.3rem)] text-[#35355b]">
                         {idx === 0 && "🥇"}
                         {idx === 1 && "🥈"}
                         {idx === 2 && "🥉"}

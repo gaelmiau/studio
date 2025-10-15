@@ -1,48 +1,58 @@
-
 export function Header() {
   return (
-    <header className="
-      relative py-1 px-4 md:px-8 border-b-2 border-primary/20 
-      bg-[#bfbce2]
-      min-h-[clamp(10px,8vw,0px)]
-      flex flex-col justify-center">
-      {/* Pleca arriba a la derecha */}
-      <div className="
-          absolute top-0 right-0 flex 
-          items-center justify-center
-          px-[clamp(8px,2vw,24px)] py-[clamp(2px,0.7vw,8px)] 
-          font-sans
-          text-white
+    <header
+      className="
+        relative 
+        flex items-center justify-between
+        w-full 
+        px-[clamp(8px,3vw,24px)] 
+        py-[clamp(4px,1vw,8px)]
+        bg-[#bfbce2]
+        border-b-2 border-primary/20
+        overflow-hidden
+      "
+    >
+      {/* Texto principal a la izquierda */}
+      <div
+        className="
+          mx-auto transform -translate-x-[25%] 
+        ">
+        <h1
+          className="
+          font-lato font-semibold text-[#172136]
           whitespace-nowrap
-          z-10
-          md:text-[clamp(12px,2vw,18px)]
-          text-[clamp(10px,4vw,16px)]
-          "
-        style={{
-          background: '#18529D',
-          fontSize: 'clamp(9px,5vw,18px)',
-          height: 'clamp(22px,7vw,32px)',
-          minWidth: 'clamp(100px,20vw,220px)',
-          padding: '5px 5px',
-        }}>
+          text-[clamp(12px,4vw,20px)]
+          leading-[clamp(16px,4.5vw,24px)]
+        "
+        >
+          Lotería de InfoSegura
+        </h1>
+      </div>
+
+
+      {/* Pleca de la UV a la derecha */}
+      <div
+        className="
+          absolute right-0 top-0 flex
+        ">
         <a
           href="https://uv.mx/"
           target="_blank"
           rel="noopener noreferrer"
-          className="text-white"
+          className="
+          bg-[#18529D]
+          text-white font-sans font-medium
+          px-[clamp(6px,1.5vw,12px)] 
+          py-[clamp(2px,0.5vw,4px)]
+          text-[clamp(10px,2.5vw,14px)]
+          whitespace-nowrap
+          transition-all duration-200
+        "
         >
           Universidad Veracruzana
         </a>
       </div>
 
-      {/* Contenido principal: logo + título */}
-      <div className="container mx-auto flex flex-col items-center h-full relative">
-        <div className="flex items-center transform -translate-x-[80%] pt-[clamp(28px,7vw,38px)]">
-          <h1 className="font-lato font-semibold text-[#172136] text-left md:text-left text-center w-full whitespace-nowrap overflow-hidden text-ellipsis" style={{ fontSize: 'clamp(16px,6vw,28px)', lineHeight: 'clamp(22px,7vw,40px)', }}>
-            Lotería de InfoSegura
-          </h1>
-        </div>
-      </div>
     </header>
   );
 }
