@@ -117,7 +117,7 @@ export default function Home() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="room" className="text-base">Código de Sala</Label>
+                  <Label htmlFor="room" className="text-base">Código de sala</Label>
                   <Input
                     id="room"
                     value={room}
@@ -129,7 +129,7 @@ export default function Home() {
                 </div>
                 <Button type="submit" className="w-full" size="lg">
                   <Gamepad2 className="mr-2" />
-                  Entrar a la Sala
+                  Entrar a la sala
                 </Button>
 
               </form>

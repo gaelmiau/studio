@@ -35,7 +35,7 @@ export default function GlosaryPage() {
         {CARDS.map((card) => (
           <Card key={card.id} className="shadow-md">
             <CardHeader>
-              <CardTitle className="text-[26px] font-semibold">
+              <CardTitle className="text-[18px] font-semibold">
                 {card.name}
               </CardTitle>
             </CardHeader>
@@ -55,14 +55,15 @@ export default function GlosaryPage() {
                 {/* Descripción desde loteria.ts */}
                 <div
                   className="
-                  flex-1 
-                  text-muted-foreground 
-                  text-base sm:text-lg md:text-xl lg:text-2xl 
-                  leading-relaxed 
-                "
+                    flex-1 
+                    text-muted-foreground 
+                    leading-relaxed
+                    text-[clamp(16px, 2vw, 20px)]
+                  "
                 >
                   {card.descriptionLong}
                 </div>
+
 
               </div>
             </CardContent>
