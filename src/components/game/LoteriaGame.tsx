@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/select";
 import { IdleModal } from "./IdleModal";
 import { getRestriction } from "@/lib/loteria";
-import { cantarCarta } from "@/lib/cantadito";
+import { cantarCarta, cantarCartaConAudio } from "@/lib/cantadito";
 
 interface LoteriaGameProps {
   roomId: string;
@@ -208,7 +208,7 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
             calledCardIds: newCalledCardIds,
           },
         });
-      }, 100); // <-- 5 segundos entre cartas CAMBIAR
+      }, 3500); // <-- 5 segundos entre cartas CAMBIAR
     }
 
     return () => {
@@ -238,21 +238,21 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
   const uniqueHistory = calledCards.filter(
     (card, index, self) => self.findIndex(c => c.id === card.id) === index
   );
-
+  /*
   // Efecto para cantar la carta cuando cambia
   useEffect(() => {
     if (cantaditoActivo && currentCard?.description) {
       cantarCarta(currentCard.description, currentCard.name);
     }
   }, [currentCard, cantaditoActivo]);
-
-  /*
+  */
+  
 useEffect(() => {
     if (cantaditoActivo && currentCard?.description) {
-      cantarCartaConAudio(currentCard.description, currentCard.name);
+      cantarCartaConAudio(currentCard);
     }
   }, [currentCard, cantaditoActivo]);
-  */
+  
 
   // Reiniciar solo la tabla del jugador actual
   const resetPlayerBoard = async () => {
