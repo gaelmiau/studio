@@ -4,7 +4,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 
 export const metadata: Metadata = {
-  title: 'Lotería - INFOSEGURA',
+  title: 'Lotería - InfoSegura',
   description: 'Elaborado por Célula de Desarrollo de Contenidos DGTI Xalapa.',
 };
 
