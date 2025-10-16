@@ -505,13 +505,16 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
         {/* Botón flotanto para salir */}
         <div className="fixed bottom-3 right-3 md:bottom-6 md:right-1">
           <Button
-            variant="destructive"
+            size="icon"
+            className="bg-[#1E90FF] text-white hover:bg-[#187bcd]"
+
             onClick={() => {
-              window.location.href = "/"; // vuelve al login
+              window.location.href = "/";
             }}
           >
-            <LogOut className="mr-2" />
+            <LogOut className="mr-1" />
           </Button>
+
         </div>
 
       </div>
