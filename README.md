@@ -57,6 +57,7 @@ Cada modo tiene sus propias condiciones de victoria implementadas en el sistema 
 El proyecto sigue una **arquitectura modular por capas**, organizada en el directorio ```src/app/.```
 
 **Estructura general:**
+```
 src/
 ├── app/
 │   ├── page.tsx               → Página principal (Login / Unirse a sala)
@@ -72,7 +73,7 @@ src/
 │   ├── firebaseRoom.ts        → Funciones de lectura y escritura en la base de datos (Firestore)
 │   ├── loteria.ts             → Lógica de generación y validación de tableros de Lotería
 │   └── utils.ts               → Funciones auxiliares y utilidades generales
-
+```
 ##### Flujo de datos
 
 1. El jugador ingresa su **nombre** y **código de sala.**
