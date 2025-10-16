@@ -246,13 +246,13 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
     }
   }, [currentCard, cantaditoActivo]);
   */
-  
-useEffect(() => {
+
+  useEffect(() => {
     if (cantaditoActivo && currentCard?.description) {
       cantarCartaConAudio(currentCard);
     }
   }, [currentCard, cantaditoActivo]);
-  
+
 
   // Reiniciar solo la tabla del jugador actual
   const resetPlayerBoard = async () => {
