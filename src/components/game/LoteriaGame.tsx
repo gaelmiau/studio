@@ -5,7 +5,7 @@ import { DealerDisplay } from "./DealerDisplay";
 import { WinnerModal } from "./WinnerModal";
 import { Button } from "@/components/ui/button";
 import { Card as CardType, generateBoard, createDeck, checkWin, CARDS } from "@/lib/loteria";
-import { Play, RotateCw } from "lucide-react";
+import { Play, RotateCw, LogOut } from "lucide-react";
 import { PlayerList } from "./PlayerList";
 import { updateRoom } from "@/lib/firebaseRoom";
 import {
@@ -500,8 +500,20 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
               isAllowed={isAllowed}
             />
           </div>
-
         </div>
+
+        {/* Botón flotanto para salir */}
+        <div className="fixed bottom-3 right-3 md:bottom-6 md:right-1">
+          <Button
+            variant="destructive"
+            onClick={() => {
+              window.location.href = "/"; // vuelve al login
+            }}
+          >
+            <LogOut className="mr-2" />
+          </Button>
+        </div>
+
       </div>
 
 
