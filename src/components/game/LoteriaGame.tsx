@@ -208,7 +208,7 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
             calledCardIds: newCalledCardIds,
           },
         });
-      }, 3500); // <-- 5 segundos entre cartas CAMBIAR
+      }, 3500); // <-- 3.5 segundos entre cartas CAMBIAR
     }
 
     return () => {
@@ -239,7 +239,7 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
     (card, index, self) => self.findIndex(c => c.id === card.id) === index
   );
   /*
-  // Efecto para cantar la carta cuando cambia
+  // Efecto para cantar la carta con voz tipo jaws
   useEffect(() => {
     if (cantaditoActivo && currentCard?.description) {
       cantarCarta(currentCard.description, currentCard.name);
@@ -305,9 +305,7 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
     }
   }, [gameState.isGameActive]);
 
-
-
-
+  // Función que determina si una carta es clickeable según el modo y la primera carta seleccionada
   const isAllowed = (card: { row: number; col: number }) => {
     const idx = card.row * 4 + card.col;
 
