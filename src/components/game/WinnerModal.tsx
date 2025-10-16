@@ -35,7 +35,7 @@ export function WinnerModal({ open, onRestart, ranking, gameMode }: WinnerModalP
           min-h-[340px]
         "
         style={{
-          backgroundImage: "url('/loteriaGanadorFondo.png')",
+          backgroundImage: "url('/loteriaGanador2.png')",
           backgroundPosition: "center",
         }}
       >

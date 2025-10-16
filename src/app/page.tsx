@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { BookOpen, Gamepad2 } from "lucide-react";
+import { BookOpen, Gamepad2, ClipboardPen } from "lucide-react";
 import { getRoom, setRoom, updateRoom } from "@/lib/firebaseRoom";
 import { generateBoard } from "@/lib/loteria";
 import { ref, onDisconnect } from "firebase/database";
@@ -140,6 +140,15 @@ export default function Home() {
                   Glosario de cartas
                 </Button>
               </div>
+
+              {/* Botón para Instructivo */}
+              <div className="my-4 border-t border-muted">
+                <Button className="w-full" variant="outline" size="lg" onClick={() => router.push("/instructions")}>
+                  <ClipboardPen className="mr-2" />
+                  Instructivo del juego
+                </Button>
+              </div>
+
             </CardContent>
           </Card>
         </div>
