@@ -67,7 +67,7 @@ src/
 │        ├── Header.tsx          → Componente de encabezado
 │        ├── Board.tsx           → Componente del tablero de juego
 │        ├── Card.tsx            → Componente individual de la carta
-│        └── ModalWinner.tsx     → Modal para el anuncio del ganador
+│        └── WinnerModal.tsx     → Modal para el anuncio del ganador
 ├── lib/
 │   ├── firebase.ts            → Configuración e inicialización de Firebase
 │   ├── firebaseRoom.ts        → Funciones de lectura y escritura en la base de datos (Firestore)
