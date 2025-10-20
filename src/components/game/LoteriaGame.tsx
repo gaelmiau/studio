@@ -5,7 +5,7 @@ import { DealerDisplay } from "./DealerDisplay";
 import { WinnerModal } from "./WinnerModal";
 import { Button } from "@/components/ui/button";
 import { Card as CardType, generateBoard, createDeck, checkWin, CARDS } from "@/lib/loteria";
-import { Play, RotateCw, LogOut } from "lucide-react";
+import { Play, RotateCw, LogOut, Volume2, VolumeOff } from "lucide-react";
 import { PlayerList } from "./PlayerList";
 import { updateRoom } from "@/lib/firebaseRoom";
 import {
@@ -459,8 +459,19 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
                 variant={cantaditoActivo ? "default" : "outline"}
                 onClick={() => setCantaditoActivo((prev) => !prev)}
               >
-                {cantaditoActivo ? "Desactivar Cantadito" : "Activar Cantadito"}
+                {cantaditoActivo ? (
+                  <>
+                    <VolumeOff className="mr-2" />
+                    Cantadito
+                  </>
+                ) : (
+                  <>
+                    <Volume2 className="mr-2" />
+                    Cantadito
+                  </>
+                )}
               </Button>
+
             </div>
           </div>
         </div>
@@ -506,13 +517,14 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
         <div className="fixed bottom-3 right-3 md:bottom-6 md:right-1">
           <Button
             size="icon"
-            className="bg-[#1E90FF] text-white hover:bg-[#187bcd]"
+            className="bg-[#D4165C] text-white hover:bg-[#AA124A]"
 
             onClick={() => {
               window.location.href = "/";
             }}
           >
             <LogOut className="mr-1" />
+            
           </Button>
 
         </div>
