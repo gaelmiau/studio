@@ -27,11 +27,23 @@ export default function InstructionsPage() {
                     <div className="space-y-4 text-muted-foreground leading-relaxed">
                         <h2 className="text-2xl font-semibold">Modos de Juego</h2>
                         <ul className="list-disc list-inside space-y-2">
+                            {/* Imágen con descripción para cada modo */}
+                            <img src="/instructive/tradicional.png" alt="Modo Tradicional" className="w-full max-w-md mx-auto" />
                             <li><strong>Tradicional:</strong> El primer jugador en completar toda su tabla gana.</li>
+
+                            <img src="/instructive/filas.png" alt="Modo Rápido" className="w-full max-w-md mx-auto" />
                             <li><strong>Filas:</strong> El primer jugador en completar una línea horizontal gana.</li>
+
+                            <img src="/instructive/columnas.png" alt="Modo Columnas" className="w-full max-w-md mx-auto" />
                             <li><strong>Columnas:</strong> El primer jugador en completar una línea vertical gana.</li>
+
+                            <img src="/instructive/diagonales.png" alt="Modo Diagonales" className="w-full max-w-md mx-auto" />
                             <li><strong>Diagonales:</strong> El primer jugador en completar una línea diagonal gana.</li>
+
+                            <img src="/instructive/esquinas.png" alt="Modo Esquinas" className="w-full max-w-md mx-auto" />
                             <li><strong>Esquinas:</strong>El primer jugador en completar las 4 esquinas gana.</li>
+
+                            <img src="/instructive/cuadrado.png" alt="Modo Cuadrado" className="w-full max-w-md mx-auto" />
                             <li><strong>Cuadrado:</strong>El primer jugador en completas el cuadrado central gana.</li>
                         </ul>
 
