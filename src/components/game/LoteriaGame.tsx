@@ -18,6 +18,7 @@ import {
 import { IdleModal } from "./IdleModal";
 import { getRestriction } from "@/lib/loteria";
 import { cantarCarta, cantarCartaConAudio } from "@/lib/cantadito";
+import { ModeRequiredModal } from "./ModeRequiredModal"; // <-- añadido
 
 interface LoteriaGameProps {
   roomId: string;
@@ -54,6 +55,7 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
   // Cantadito
   const [cantaditoActivo, setCantaditoActivo] = useState(false);
 
+  const [showModeModal, setShowModeModal] = useState(false); // <-- añadido
 
   // Actualiza ranking cuando hay ganador
   useEffect(() => {
@@ -117,7 +119,8 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
     if (!isHost) return;
 
     if (!selectedMode) {
-      alert("Debes seleccionar un modo de juego antes de iniciar.");
+      //alert("Debes seleccionar un modo de juego antes de iniciar.");
+      setShowModeModal(true); // <-- ahora abre modal en lugar de alert
       return;
     }
 
@@ -531,6 +534,9 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
 
       </div>
 
+
+      {/* Modal que indica que se debe seleccionar modo */}
+      <ModeRequiredModal open={showModeModal} onClose={() => setShowModeModal(false)} />
 
       {/* Modal que muestra el ganador */}
       <WinnerModal
