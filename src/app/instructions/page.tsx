@@ -1,8 +1,47 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { BookOpen, ClipboardPen } from "lucide-react";
+import { ClipboardPen } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+
+const MODOS = [
+    {
+        key: "tradicional",
+        title: "Tradicional",
+        img: "/instructive/tradicional.png",
+        text: "El primer jugador en completar toda su tabla gana.",
+    },
+    {
+        key: "filas",
+        title: "Filas",
+        img: "/instructive/filas.png",
+        text: "El primer jugador en completar una línea horizontal gana.",
+    },
+    {
+        key: "columnas",
+        title: "Columnas",
+        img: "/instructive/columnas.png",
+        text: "El primer jugador en completar una línea vertical gana.",
+    },
+    {
+        key: "diagonales",
+        title: "Diagonales",
+        img: "/instructive/diagonales.png",
+        text: "El primer jugador en completar una línea diagonal gana.",
+    },
+    {
+        key: "esquinas",
+        title: "Esquinas",
+        img: "/instructive/esquinas.png",
+        text: "El primer jugador en completar las 4 esquinas gana.",
+    },
+    {
+        key: "cuadrado",
+        title: "Cuadrado",
+        img: "/instructive/cuadrado.png",
+        text: "El primer jugador en completar el cuadrado central gana.",
+    },
+];
 
 export default function InstructionsPage() {
     const router = useRouter();
@@ -17,41 +56,44 @@ export default function InstructionsPage() {
                     Aquí encontrarás las instrucciones para jugar a la lotería.
                 </p>
             </div>
-            <div className="mb-8">
-                <Button className="w-full" onClick={() => router.push("/")}>
+
+            {/* Botón de volver al inicio arriba */}
+            <div className="mb-8 flex justify-center">
+                <Button className="w-full md:w-auto" onClick={() => router.push("/")}>
                     Volver al inicio
                 </Button>
             </div>
-            <Card className="shadow-md p-6">
-                <CardContent>
-                    <div className="space-y-4 text-muted-foreground leading-relaxed">
-                        <h2 className="text-2xl font-semibold">Modos de Juego</h2>
-                        <ul className="list-disc list-inside space-y-2">
-                            {/* Imágen con descripción para cada modo */}
-                            <img src="/instructive/tradicional.png" alt="Modo Tradicional" className="w-full max-w-md mx-auto" />
-                            <li><strong>Tradicional:</strong> El primer jugador en completar toda su tabla gana.</li>
 
-                            <img src="/instructive/filas.png" alt="Modo Rápido" className="w-full max-w-md mx-auto" />
-                            <li><strong>Filas:</strong> El primer jugador en completar una línea horizontal gana.</li>
+            {/* Tarjetas de modos */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {MODOS.map((m) => (
+                    <Card
+                        key={m.key}
+                        className="shadow-lg transition-all duration-200 rounded-2xl"
+                    >
+                        <CardContent className="p-5 flex flex-col items-center text-center space-y-4">
+                            <img
+                                src={m.img}
+                                alt={m.title}
+                                className="w-[100px] sm:w-[120px] md:w-[140px] h-auto rounded-md border mt-2"
+                            />
+                            <div>
+                                <h3 className="text-lg font-semibold">{m.title}</h3>
+                                <p className="text-muted-foreground mt-2 text-[15px] leading-relaxed">
+                                    {m.text}
+                                </p>
+                            </div>
+                        </CardContent>
+                    </Card>
+                ))}
+            </div>
 
-                            <img src="/instructive/columnas.png" alt="Modo Columnas" className="w-full max-w-md mx-auto" />
-                            <li><strong>Columnas:</strong> El primer jugador en completar una línea vertical gana.</li>
-
-                            <img src="/instructive/diagonales.png" alt="Modo Diagonales" className="w-full max-w-md mx-auto" />
-                            <li><strong>Diagonales:</strong> El primer jugador en completar una línea diagonal gana.</li>
-
-                            <img src="/instructive/esquinas.png" alt="Modo Esquinas" className="w-full max-w-md mx-auto" />
-                            <li><strong>Esquinas:</strong>El primer jugador en completar las 4 esquinas gana.</li>
-
-                            <img src="/instructive/cuadrado.png" alt="Modo Cuadrado" className="w-full max-w-md mx-auto" />
-                            <li><strong>Cuadrado:</strong>El primer jugador en completas el cuadrado central gana.</li>
-                        </ul>
-
-                        <p>¡Buena suerte a todos los jugadores!</p>
-                    </div>
-
-                </CardContent>
-            </Card>
+            {/* Botón de volver al inicio abajo */}
+            <div className="mt-8 flex justify-center">
+                <Button className="w-full md:w-auto" onClick={() => router.push("/")}>
+                    Volver al inicio
+                </Button>
+            </div>
 
         </main>
     );
