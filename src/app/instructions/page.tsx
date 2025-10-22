@@ -57,12 +57,12 @@ export default function InstructionsPage() {
                 </p>
             </div>
 
-            {/* Botón de volver al inicio arriba */}
+            {/* Botón volver (arriba) */}
             <div className="mb-8 flex justify-center">
-                <Button className="w-full md:w-auto" onClick={() => router.push("/")}>
+                <Button className="w-full" onClick={() => router.push("/")}>
                     Volver al inicio
                 </Button>
-            </div>
+            </div>  
 
             {/* Tarjetas de modos */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -88,9 +88,9 @@ export default function InstructionsPage() {
                 ))}
             </div>
 
-            {/* Botón de volver al inicio abajo */}
+            {/* Botón volver (abajo) */}
             <div className="mt-8 flex justify-center">
-                <Button className="w-full md:w-auto" onClick={() => router.push("/")}>
+                <Button className="w-full" onClick={() => router.push("/")}>
                     Volver al inicio
                 </Button>
             </div>
