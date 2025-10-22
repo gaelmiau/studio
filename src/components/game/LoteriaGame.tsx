@@ -545,6 +545,7 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
         gameMode={gameState.gameMode}
         onRestart={isHost ? resetGame : undefined}
       />
+      
 
       {/* Modal de inactividad */}
       <IdleModal
