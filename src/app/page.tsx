@@ -12,6 +12,7 @@ import { getRoom, setRoom, updateRoom } from "@/lib/firebaseRoom";
 import { generateBoard } from "@/lib/loteria";
 import { ref, onDisconnect } from "firebase/database";
 import { database } from "@/lib/firebase";
+import { RoomFullModal } from "@/components/game/RoomFullModal"; // <-- añadido
 
 // Función para limpiar el código de sala de caracteres prohibidos por Firebase
 function sanitizeRoomId(roomId: string) {
@@ -21,6 +22,9 @@ function sanitizeRoomId(roomId: string) {
 export default function Home() {
   const [name, setName] = useState("");
   const [room, setRoomState] = useState("");
+  const [showRoomFullModal, setShowRoomFullModal] = useState(false);
+  const MAX_PLAYERS = 25; // Límite de jugadores por sala
+
   const router = useRouter();
 
   const handleJoinRoom = async (e: React.FormEvent) => {
@@ -34,6 +38,15 @@ export default function Home() {
       const playerName = name.trim();
       const roomData = await getRoom(roomId);
 
+      // valida límite de jugadores si la sala existe
+      const playersObj = roomData?.players ?? {};
+      const currentCount = Object.keys(playersObj).length;
+      if (currentCount >= MAX_PLAYERS) {
+        setShowRoomFullModal(true);
+        return;
+      }
+
+      // valida nombre duplicado
       if (roomData && roomData.players && roomData.players[playerName]) {
         alert("Ya existe un jugador con ese nombre en la sala. Elige otro.");
         return;
@@ -61,7 +74,7 @@ export default function Home() {
         });
       } else {
         // Si existe, agrega el jugador con board y markedIndices
-        const newHost = roomData.gameState.host || playerName;
+        const newHost = roomData.gameState?.host || playerName; // 
         await updateRoom(roomId, {
           players: {
             ...roomData.players,
@@ -161,6 +174,13 @@ export default function Home() {
           <p>Elaborado por Célula de Desarrollo de Contenidos DGTI Xalapa.</p>
         </div>
       </footer>
+      {/* Modal de sala llena */}
+      <RoomFullModal
+        open={showRoomFullModal}
+        onClose={() => setShowRoomFullModal(false)}
+        roomId={room}
+        maxPlayers={MAX_PLAYERS}
+      />
     </div>
   );
 }
