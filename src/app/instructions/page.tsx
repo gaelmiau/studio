@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { ClipboardPen, Timer, Users, Moon, Shuffle, RotateCw } from "lucide-react";
+import { ClipboardPen, Timer, Users, Moon, Shuffle, RotateCw, Volume2, Crown } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 
 const MODOS = [
@@ -49,7 +49,13 @@ const GAME_RULES = [
         title: "Tiempo entre cartas",
         value: "3.5 segundos",
         icon: Timer,
-        text: "Cada carta se canta cada 3.5 segundos. Puedes activar el 'cantadito' para escuchar el nombre de la carta, algunas pueden tardar más según su nombre.",
+        text: "Cada carta se canta cada 3.5 segundos.",
+    },
+    {
+        title: "Cantadito",
+        value: "Paso de cartas",
+        icon: Volume2,
+        text: "Puedes activar el 'cantadito' para escuchar el nombre de la carta, algunas pueden tardar más según su nombre.",
     },
     {
         title: "Inactividad del jugador",
@@ -58,9 +64,15 @@ const GAME_RULES = [
         text: "Si no hay actividad por 1 minuto y medio, recibirás una advertencia. Tendrás 15 segundos para responder antes de ser desconectado.",
     },
     {
-        title: "Límite y anfitrión",
+        title: "Límite de jugadores",
         value: "25 jugadores",
         icon: Users,
+        text: "Solo pueden participar hasta 25 jugadores por sala.",
+    },
+    {
+        title: "Anfitrión",
+        value: "1 por sala",
+        icon: Crown,
         text: "El primer jugador en entrar será el anfitrión. Si se desconecta, el rol pasa al siguiente. Solo pueden participar hasta 25 jugadores por partida.",
     },
     {
@@ -69,6 +81,7 @@ const GAME_RULES = [
         icon: RotateCw,
         text: "Puedes generar una nueva tabla desde el botón 'Nueva Tabla', pero solo si la partida no está en curso.",
     },
+    
 ];
 
 export default function InstructionsPage() {
