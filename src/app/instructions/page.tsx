@@ -3,6 +3,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ClipboardPen, Timer, Users, Moon, Shuffle, RotateCw, Volume2, Crown } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { Header } from "@/components/Header";
 
 const MODOS = [
     {
@@ -89,8 +90,10 @@ export default function InstructionsPage() {
 
     return (
         <main className="flex min-h-screen flex-col bg-background text-foreground p-6">
+            {/* Encabezado */}
+            <Header />
             <div className="mb-8 text-center">
-                <h1 className="text-[32px] font-bold flex items-center justify-center gap-2">
+                <h1 className="text-[20px] font-bold flex items-center justify-center gap-2">
                     <ClipboardPen className="w-7 h-7" />
                     Instructivo del Juego
                 </h1>

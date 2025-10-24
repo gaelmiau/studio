@@ -157,7 +157,7 @@ export default function Home() {
               {/* Botón para Instructivo */}
               <div className="my-4 border-t border-muted">
                 <Button className="w-full" variant="outline" size="lg" onClick={() => router.push("/instructions")}>
-                  <ClipboardPen className="mr-2" />
+                  <img src="/LoteriaSI-InterfazIconoInstructivo.svg" alt="Instructivo Icon" className="h-4 w-4 inline-block mr-2" /> 
                   Instructivo del juego
                 </Button>
               </div>

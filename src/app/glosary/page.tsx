@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { CARDS } from "@/lib/loteria";
 import { BookOpen, Fullscreen } from "lucide-react";
+import { Header } from "@/components/Header";
 
 export default function GlosaryPage() {
   const router = useRouter();
@@ -13,9 +14,10 @@ export default function GlosaryPage() {
   return (
     <main className="flex min-h-screen flex-col bg-background text-foreground p-6">
       {/* Encabezado */}
+      <Header />
       <div className="mb-8 text-center">
-        <h1 className="text-[32px] font-bold flex items-center justify-center gap-2">
-          <BookOpen className="w-7 h-7" />
+        <h1 className="text-[20px] font-bold flex items-center justify-center gap-2">
+          <BookOpen className="w-6 h-6" />
           Glosario de Cartas
         </h1>
         <p className="text-muted-foreground mt-2">
