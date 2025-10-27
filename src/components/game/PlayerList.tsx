@@ -30,7 +30,7 @@ export function PlayerList({
   return (
     <Card>
       <CardHeader>
-        <div className="mb-2 text-sm text-muted-foreground text-center">
+        <div className="mb-2 text-sm text-muted-foreground text-center text-[clamp(10px,5vw,16px)]">
           Sala de Juego:{" "}
           <span className="font-bold text-primary">{roomId}</span>
         </div>
@@ -45,7 +45,7 @@ export function PlayerList({
           {/* Bloque del ícono y texto */}
           <div
             className="flex items-center justify-center gap-2 font-bold"
-            style={{ fontSize: "clamp(10px, 5vw, 16px)" }}
+            style={{ fontSize: "clamp(10px, 5vw, 14px)" }}
           >
             <Users className="w-5 h-5 shrink-0 hidden md:inline" />
             <span className="whitespace-nowrap">
