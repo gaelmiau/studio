@@ -523,7 +523,7 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
               </div>
 
               {/* Botón dentro del recuadro: en md+ se posiciona absolute bottom-right (dentro del padding que añadimos) */}
-              <div className="hidden md:flex absolute right-0 bottom-1 z-20">
+              <div className="hidden md:flex absolute right-0 bottom-0 z-20">
                 <Button
                   size="icon"
                   className="bg-[#D4165C] text-white hover:bg-[#AA124A] border-2 border-primary"
@@ -541,8 +541,8 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
                   className="bg-[#D4165C] text-white hover:bg-[#AA124A] border-2 border-primary"
                   onClick={() => { window.location.href = "/"; }}
                 >
-                  <LogOut className="mr-2" />
-                  Salir
+                  <LogOut />
+                  
                 </Button>
               </div>
             </div>
