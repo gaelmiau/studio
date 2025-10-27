@@ -15,7 +15,7 @@ export function GameBoard({ board, onCardClick, markedIndices, calledCardIds, is
   const seleccionadas = markedIndices.length;
 
   return (
-    <div className="grid grid-cols-4 gap-2 p-2 rounded-lg bg-secondary border-2 border-primary/20 w-full h-full">
+    <div className="grid grid-cols-4 gap-0 p-2 rounded-lg bg-secondary border-1 border-primary/20 w-full h-full">
       {board.map((card, index) => {
         const row = Math.floor(index / 4);
         const col = index % 4;
