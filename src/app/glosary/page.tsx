@@ -28,7 +28,7 @@ export default function GlosaryPage() {
 
         {/* Botón volver (arriba) */}
         <div className="mb-8 flex justify-center">
-          <Button className="w-full" onClick={() => router.push("/")}>
+          <Button className="w-sm" onClick={() => router.push("/")}>
             Volver al inicio
           </Button>
         </div>
@@ -64,7 +64,7 @@ export default function GlosaryPage() {
 
         {/* Botón volver (abajo) */}
         <div className="mt-8 flex justify-center">
-          <Button className="w-full" onClick={() => router.push("/")}>
+          <Button className="w-sm" onClick={() => router.push("/")}>
             Volver al inicio
           </Button>
         </div>
