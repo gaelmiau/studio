@@ -21,7 +21,7 @@ export default function GlosaryPage() {
             <BookOpen className="w-6 h-6" />
             Glosario de Cartas
           </h1>
-          <p className="text-muted-foreground mt-2">
+          <p className="text-muted-foreground mt-2 text-[18px] leading-relaxed">
             Aquí encontrarás la descripción de cada carta de la lotería.
           </p>
         </div>

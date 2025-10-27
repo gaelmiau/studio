@@ -99,7 +99,7 @@ export default function InstructionsPage() {
                         <ClipboardPen className="w-7 h-7" />
                         Instructivo del Juego
                     </h1>
-                    <p className="text-muted-foreground mt-2">
+                    <p className="text-muted-foreground mt-2 text-[18px] leading-relaxed">
                         Aquí encontrarás las instrucciones para jugar a la lotería.
                     </p>
                 </div>
