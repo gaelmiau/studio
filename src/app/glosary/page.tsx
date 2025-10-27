@@ -53,14 +53,7 @@ export default function GlosaryPage() {
                       className="rounded-md border"
                     />
                   </div>
-                  <div
-                    className="
-                    flex-1 
-                    text-muted-foreground 
-                    leading-relaxed
-                    text-[clamp(16px, 2vw, 20px)]
-                  "
-                  >
+                  <div className="flex-1 text-muted-foreground leading-relaxed text-[16px]">
                     {card.descriptionLong}
                   </div>
                 </div>

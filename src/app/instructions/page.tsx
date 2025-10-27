@@ -96,7 +96,7 @@ export default function InstructionsPage() {
 
                 <div className="mb-8 text-center">
                     <h1 className="text-[20px] font-bold flex items-center justify-center gap-2">
-                        <ClipboardPen className="w-7 h-7" />
+                        <img src="/LoteriaSI-InterfazIconoInstructivo.svg" alt="Instructivo Icon" className="h-6 w-6 inline-block mr-2" /> 
                         Instructivo del Juego
                     </h1>
                     <p className="text-muted-foreground mt-2 text-[18px] leading-relaxed">
@@ -133,7 +133,7 @@ export default function InstructionsPage() {
                                 />
                                 <div>
                                     <h3 className="text-lg font-semibold">{m.title}</h3>
-                                    <p className="text-muted-foreground mt-2 text-[15px] leading-relaxed">
+                                    <p className="text-muted-foreground mt-2 text-[16px] leading-relaxed">
                                         {m.text}
                                     </p>
                                 </div>
@@ -169,10 +169,10 @@ export default function InstructionsPage() {
                                         <Icon className="w-8 h-8 text-primary" />
                                     </div>
                                     <h3 className="text-lg font-semibold">{rule.title}</h3>
-                                    <p className="text-2xl font-bold text-primary">
+                                    <p className="text-[16px] font-bold text-primary">
                                         {rule.value}
                                     </p>
-                                    <p className="text-muted-foreground text-[15px] leading-relaxed">
+                                    <p className="text-muted-foreground text-[16px] leading-relaxed">
                                         {rule.text}
                                     </p>
                                 </CardContent>
