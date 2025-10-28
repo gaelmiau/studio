@@ -21,7 +21,7 @@ export function Header() {
           className="
           font-lato font-semibold text-[#172136]
           whitespace-nowrap
-          text-[clamp(12px,4vw,20px)]
+          text-[clamp(12px,4vw,24px)]
           leading-[clamp(16px,4.5vw,24px)]
         "
         >

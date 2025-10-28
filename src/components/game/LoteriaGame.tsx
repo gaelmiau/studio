@@ -18,6 +18,8 @@ import {
 import { IdleModal } from "./IdleModal";
 import { getRestriction } from "@/lib/loteria";
 import { cantarCarta, cantarCartaConAudio } from "@/lib/cantadito";
+import { ModeRequiredModal } from "./ModeRequiredModal"; // <-- añadido
+import { ResponsiveScale } from "@/components/ResponsiveScale";
 
 interface LoteriaGameProps {
   roomId: string;
@@ -54,6 +56,7 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
   // Cantadito
   const [cantaditoActivo, setCantaditoActivo] = useState(false);
 
+  const [showModeModal, setShowModeModal] = useState(false); // <-- añadido
 
   // Actualiza ranking cuando hay ganador
   useEffect(() => {
@@ -117,7 +120,8 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
     if (!isHost) return;
 
     if (!selectedMode) {
-      alert("Debes seleccionar un modo de juego antes de iniciar.");
+      //alert("Debes seleccionar un modo de juego antes de iniciar.");
+      setShowModeModal(true); // <-- ahora abre modal en lugar de alert
       return;
     }
 
@@ -347,213 +351,230 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
 
   return (
     <>
-      {/* Grid principal: cambia de 1 columna en móvil a 12 columnas en escritorio */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-4 w-full">
+      <ResponsiveScale minWidth={1400} maxScale={1.45}>
+        {/* Grid principal: cambia de 1 columna en móvil a 12 columnas en escritorio */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 w-full">
 
-        {/* PLAYER LIST - izquierda */}
-        <div className="flex justify-center col-span-1 md:col-span-3">
-          {/* Contenedor responsivo para ajustar tamaño según el viewport */}
-          <div className="w-[clamp(160px,18vw,260px)]">
-            {/* Lista de jugadores */}
-            <PlayerList
-              players={allPlayers}
-              currentPlayerName={playerName}
-              hostName={gameState.host || ""}
-              roomId={roomId}
-            />
+          {/* PLAYER LIST - izquierda */}
+          <div className="flex justify-center col-span-1 md:col-span-3">
+            {/* Contenedor responsivo para ajustar tamaño según el viewport */}
+            <div className="w-[clamp(160px,18vw,260px)]">
+              {/* Lista de jugadores */}
+              <PlayerList
+                players={allPlayers}
+                currentPlayerName={playerName}
+                hostName={gameState.host || ""}
+                roomId={roomId}
+              />
 
-            {/* Botones de control del juego */}
-            <div className="mt-4 flex flex-col gap-2">
-              {/* Solo lo ve el anfitrión */}
-              {isHost && (
-                <>
-                  {/* Botón para iniciar juego */}
-                  <Button onClick={startGame} disabled={gameState.isGameActive || !!gameState.winner}>
-                    <Play className="mr-2" />
-                    Iniciar Juego
-                  </Button>
-                  {/* Botón para terminar juego activo */}
-                  {gameState.isGameActive && !gameState.winner && (
-                    <Button
-                      onClick={async () => {
-                        if (!isHost) return;
-
-                        // Reinicia solo cartas y firstCard, pero conserva el modo
-                        const updatedPlayers = { ...roomData.players };
-                        Object.keys(updatedPlayers).forEach(pName => {
-                          updatedPlayers[pName].markedIndices = [];
-                        });
-
-                        await updateRoom(roomId, {
-                          players: updatedPlayers,
-                          gameState: {
-                            ...gameState,
-                            isGameActive: false,
-                            winner: null,
-                            calledCardIds: [],
-                          }
-                        });
-
-                        setFirstCard(null); // reinicia carta inicial
-                      }}
-                      variant="destructive"
-                    >
-                      Terminar Juego
+              {/* Botones de control del juego */}
+              <div className="mt-4 flex flex-col gap-2">
+                {/* Solo lo ve el anfitrión */}
+                {isHost && (
+                  <>
+                    {/* Botón para iniciar juego */}
+                    <Button onClick={startGame} disabled={gameState.isGameActive || !!gameState.winner}>
+                      <Play className="mr-2" />
+                      Iniciar Juego
                     </Button>
-                  )}
+                    {/* Botón para terminar juego activo */}
+                    {gameState.isGameActive && !gameState.winner && (
+                      <Button
+                        onClick={async () => {
+                          if (!isHost) return;
 
-                  {/* Cambio de tipo de juego */}
-                  <Select
-                    value={selectedMode}
-                    onValueChange={async (value) => {
-                      setSelectedMode(value);
-                      setFirstCard(null); // resetea la carta inicial al cambiar modo
-                      await updateRoom(roomId, {
-                        gameState: {
-                          ...roomData.gameState,
-                          gameMode: value,
-                        },
-                      });
-                    }}
-                  >
-                    <SelectTrigger className="w-full" disabled={gameState.isGameActive}>
-                      <SelectValue placeholder="Seleccionar modo de juego" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {Object.entries(GAME_MODE_LABELS).map(([value, label]) => (
-                        <SelectItem key={value} value={value}>{label}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                          // Reinicia solo cartas y firstCard, pero conserva el modo
+                          const updatedPlayers = { ...roomData.players };
+                          Object.keys(updatedPlayers).forEach(pName => {
+                            updatedPlayers[pName].markedIndices = [];
+                          });
+
+                          await updateRoom(roomId, {
+                            players: updatedPlayers,
+                            gameState: {
+                              ...gameState,
+                              isGameActive: false,
+                              winner: null,
+                              calledCardIds: [],
+                            }
+                          });
+
+                          setFirstCard(null); // reinicia carta inicial
+                        }}
+                        variant="destructive"
+                      >
+                        Terminar Juego
+                      </Button>
+                    )}
+
+                    {/* Cambio de tipo de juego */}
+                    <Select
+                      value={selectedMode}
+                      onValueChange={async (value) => {
+                        setSelectedMode(value);
+                        setFirstCard(null); // resetea la carta inicial al cambiar modo
+                        await updateRoom(roomId, {
+                          gameState: {
+                            ...roomData.gameState,
+                            gameMode: value,
+                          },
+                        });
+                      }}
+                    >
+                      <SelectTrigger className="w-full" disabled={gameState.isGameActive}>
+                        <SelectValue placeholder="Seleccionar modo de juego" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Object.entries(GAME_MODE_LABELS).map(([value, label]) => (
+                          <SelectItem key={value} value={value}>{label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
 
 
-                </>
-              )}
-
-              {/* Botón para reiniciar la tabla del jugador actual */}
-              <Button onClick={resetPlayerBoard} variant="outline" disabled={gameState.isGameActive}>
-                <RotateCw className="mr-2" />
-                Nueva Tabla
-              </Button>
-
-              {/* Mensaje para jugadores que no son anfitrión */}
-              {!isHost && gameState.host && !gameState.isGameActive && !gameState.winner && (
-                <p className="text-center text-muted-foreground p-2 bg-muted rounded-md">
-                  <span className="font-bold">{gameState.host || "Anfitrión"}</span> es el anfitrión. Esperando...
-                </p>
-              )}
-
-              {/* Mensaje de modo de juego */}
-              {!isHost && gameState.gameMode && (
-                <div className="mt-2 p-2 bg-primary/10 border border-primary/20 rounded-md text-center">
-                  <p className="text-sm">
-                    Modo: <span className="font-semibold">
-                      {GAME_MODE_LABELS[gameState.gameMode] || gameState.gameMode}
-                    </span>
-                  </p>
-                </div>
-              )}
-
-              {/* Botón Cantadito */}
-              <Button
-                variant={cantaditoActivo ? "default" : "outline"}
-                onClick={() => setCantaditoActivo((prev) => !prev)}
-              >
-                {cantaditoActivo ? (
-                  <>
-                    <VolumeOff className="mr-2" />
-                    Cantadito
-                  </>
-                ) : (
-                  <>
-                    <Volume2 className="mr-2" />
-                    Cantadito
                   </>
                 )}
-              </Button>
 
+                {/* Botón para reiniciar la tabla del jugador actual */}
+                <Button onClick={resetPlayerBoard} variant="outline" disabled={gameState.isGameActive}>
+                  <RotateCw className="mr-2" />
+                  Nueva Tabla
+                </Button>
+
+                {/* Mensaje para jugadores que no son anfitrión */}
+                {!isHost && gameState.host && !gameState.isGameActive && !gameState.winner && (
+                  <p className="text-center text-muted-foreground p-2 bg-muted">
+                    <span className="font-bold">{gameState.host || "Anfitrión"}</span> es el anfitrión. Esperando...
+                  </p>
+                )}
+
+                {/* Mensaje de modo de juego */}
+                {!isHost && gameState.gameMode && (
+                  <div className="mt-2 p-2 bg-primary/50 border border-primary/20 text-center">
+                    <p className="text-sm">
+                      Modo: <span className="font-semibold">
+                        {GAME_MODE_LABELS[gameState.gameMode] || gameState.gameMode}
+                      </span>
+                    </p>
+                  </div>
+                )}
+
+                {/* Botón Cantadito */}
+                <Button
+                  variant={cantaditoActivo ? "default" : "outline"}
+                  onClick={() => setCantaditoActivo((prev) => !prev)}
+                >
+                  {cantaditoActivo ? (
+                    <>
+                      <VolumeOff className="mr-2" />
+                      Cantadito
+                    </>
+                  ) : (
+                    <>
+                      <Volume2 className="mr-2" />
+                      Cantadito
+                    </>
+                  )}
+                </Button>
+
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* COLUMNA CENTRAL: historial + carta actual */}
-        <div className="flex flex-col items-center gap-6 col-span-1 md:col-span-5">
-          {/* Contenedor con ancho responsivo compartido */}
-          <div className="w-[clamp(180px,17vw,250px)] md:w-[clamp(140px,18vw,250px)]">
-            {/* HISTORIAL (solo 3 cartas recientes) */}
-            <DealerDisplay
-              currentCard={null}
-              history={uniqueHistory.slice(-3)} // 3 últimas cartas
-              showCurrentCard={false}
-              showHistory={true}
-            />
+          {/* COLUMNA CENTRAL: historial + carta actual */}
+          <div className="flex flex-col items-center gap-6 col-span-1 md:col-span-5">
+            {/* Contenedor con ancho responsivo compartido */}
+            <div className="w-[clamp(180px,17vw,250px)] md:w-[clamp(140px,18vw,250px)]">
+              {/* HISTORIAL (solo 3 cartas recientes) */}
+              <DealerDisplay
+                currentCard={null}
+                history={uniqueHistory.slice(-3)} // 3 últimas cartas
+                showCurrentCard={false}
+                showHistory={true}
+              />
+            </div>
+            <div className="w-[clamp(180px,17vw,250px)] md:w-[clamp(140px,18vw,250px)] aspect-[3/4]">
+              {/* CARTA ACTUAL */}
+              <DealerDisplay
+                currentCard={currentCard}
+                showCurrentCard={true}
+                showHistory={false}
+              />
+            </div>
           </div>
-          <div className="w-[clamp(180px,17vw,250px)] md:w-[clamp(140px,18vw,250px)] aspect-[3/4]">
-            {/* CARTA ACTUAL */}
-            <DealerDisplay
-              currentCard={currentCard}
-              showCurrentCard={true}
-              showHistory={false}
-            />
+
+
+          {/* TABLERO + BOTÓN - derecha (reemplaza la sección anterior del tablero y el botón flotante) */}
+          <div className="flex justify-center col-span-1 md:col-span-4">
+            <div className="relative">
+              {/* Contenedor responsivo del tablero.
+                  En pantallas md+ añadimos padding-bottom para reservar espacio
+                  y que el botón pueda situarse "debajo" del tablero dentro del recuadro. */}
+              <div className="md:pb-12">
+                <div className="w-[clamp(220px,28vw,400px)] aspect-[265/380]">
+                  <GameBoard
+                    board={player.board}
+                    onCardClick={handleCardClick}
+                    markedIndices={player.markedIndices}
+                    calledCardIds={Array.isArray(gameState.calledCardIds) ? gameState.calledCardIds : []}
+                    isAllowed={isAllowed}
+                  />
+                </div>
+              </div>
+
+              {/* Botón dentro del recuadro: en md+ se posiciona absolute bottom-right (dentro del padding que añadimos) */}
+              <div className="hidden md:flex absolute right-0 bottom-0 z-20">
+                <Button
+                  size="icon"
+                  className="bg-[#D4165C] text-white hover:bg-[#AA124A] border-2 border-primary"
+                  onClick={() => { window.location.href = "/"; }}
+                  aria-label="Salir de la sala"
+                >
+                  <LogOut />
+                </Button>
+              </div>
+
+              {/* Botón debajo del tablero en móvil (1 columna) */}
+              <div className="mt-3 md:hidden flex justify-center">
+                <Button
+                  size="sm"
+                  className="bg-[#D4165C] text-white hover:bg-[#AA124A] border-2 border-primary"
+                  onClick={() => { window.location.href = "/"; }}
+                >
+                  <LogOut />
+                  
+                </Button>
+              </div>
+            </div>
           </div>
-        </div>
 
+          {/* Deja modales y botones flotantes fuera del wrapper */}
+          {/* Modal que indica que se debe seleccionar modo */}
+          <ModeRequiredModal open={showModeModal} onClose={() => setShowModeModal(false)} />
 
-        {/* TABLERO - derecha */}
-        <div className="flex justify-center col-span-1 md:col-span-4">
-          {/* Contenedor responsivo que mantiene proporción */}
-          <div className="w-[clamp(220px,28vw,400px)] aspect-[265/380]">
-            <GameBoard
-              board={player.board}
-              onCardClick={handleCardClick}
-              markedIndices={player.markedIndices}
-              calledCardIds={Array.isArray(gameState.calledCardIds) ? gameState.calledCardIds : []}
-              isAllowed={isAllowed}
-            />
-          </div>
-        </div>
-
-        {/* Botón flotanto para salir */}
-        <div className="fixed bottom-3 right-3 md:bottom-6 md:right-1">
-          <Button
-            size="icon"
-            className="bg-[#D4165C] text-white hover:bg-[#AA124A]"
-
-            onClick={() => {
-              window.location.href = "/";
+          {/* Modal que muestra el ganador */}
+          <WinnerModal
+            open={!!gameState.winner}
+            ranking={ranking}
+            gameMode={gameState.gameMode}
+            onRestart={isHost ? resetGame : undefined}
+          />
+          
+          {/* Modal de inactividad */}
+          <IdleModal
+            open={showIdleModal}
+            onStay={() => {
+              setShowIdleModal(false);
+              setLastActivity(Date.now());
             }}
-          >
-            <LogOut className="mr-1" />
-            
-          </Button>
+            onExit={() => {
+              window.location.href = "/"; // vuelve al login
+            }}
+          />
 
         </div>
-
-      </div>
-
-
-      {/* Modal que muestra el ganador */}
-      <WinnerModal
-        open={!!gameState.winner}
-        ranking={ranking}
-        gameMode={gameState.gameMode}
-        onRestart={isHost ? resetGame : undefined}
-      />
-
-      {/* Modal de inactividad */}
-      <IdleModal
-        open={showIdleModal}
-        onStay={() => {
-          setShowIdleModal(false);
-          setLastActivity(Date.now());
-        }}
-        onExit={() => {
-          window.location.href = "/"; // vuelve al login
-        }}
-      />
+      </ResponsiveScale>
 
     </>
   );
-
-
 }
