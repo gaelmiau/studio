@@ -33,7 +33,7 @@ export function IdleModal({ open, onStay, onExit }: IdleModalProps) {
           className="
             absolute top-3 right-3
             w-8 h-8 rounded-sm
-            bg-[#D4165C] hover:bg-[#C3185B]
+            bg-[#165C5D] hover:bg-[#D4165C]
             flex items-center justify-center
             border border-gray-200 shadow-sm
             transition-colors duration-150
