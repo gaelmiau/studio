@@ -356,9 +356,9 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4 w-full">
 
           {/* PLAYER LIST - izquierda */}
-          <div className="flex justify-center col-span-1 md:col-span-3">
+          <div className="flex justify-center col-span-1 md:col-span-3 gap-3">
             {/* Contenedor responsivo para ajustar tamaño según el viewport */}
-            <div className="w-[clamp(160px,18vw,260px)]">
+            <div className="w-[clamp(160px,18vw,260px)] flex flex-col gap-3"> 
               {/* Lista de jugadores */}
               <PlayerList
                 players={allPlayers}
@@ -368,7 +368,7 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
               />
 
               {/* Botones de control del juego */}
-              <div className="mt-4 flex flex-col gap-2">
+              <div className="flex flex-col gap-3"> 
                 {/* Solo lo ve el anfitrión */}
                 {isHost && (
                   <>
@@ -377,6 +377,7 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
                       <Play className="mr-2" />
                       Iniciar Juego
                     </Button>
+
                     {/* Botón para terminar juego activo */}
                     {gameState.isGameActive && !gameState.winner && (
                       <Button
@@ -396,7 +397,7 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
                               isGameActive: false,
                               winner: null,
                               calledCardIds: [],
-                            }
+                            },
                           });
 
                           setFirstCard(null); // reinicia carta inicial
@@ -408,30 +409,32 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
                     )}
 
                     {/* Cambio de tipo de juego */}
-                    <Select
-                      value={selectedMode}
-                      onValueChange={async (value) => {
-                        setSelectedMode(value);
-                        setFirstCard(null); // resetea la carta inicial al cambiar modo
-                        await updateRoom(roomId, {
-                          gameState: {
-                            ...roomData.gameState,
-                            gameMode: value,
-                          },
-                        });
-                      }}
-                    >
-                      <SelectTrigger className="w-full" disabled={gameState.isGameActive}>
-                        <SelectValue placeholder="Seleccionar modo de juego" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {Object.entries(GAME_MODE_LABELS).map(([value, label]) => (
-                          <SelectItem key={value} value={value}>{label}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-
-
+                    <div className="w-full">
+                      <Select
+                        value={selectedMode}
+                        onValueChange={async (value) => {
+                          setSelectedMode(value);
+                          setFirstCard(null); // resetea la carta inicial al cambiar modo
+                          await updateRoom(roomId, {
+                            gameState: {
+                              ...roomData.gameState,
+                              gameMode: value,
+                            },
+                          });
+                        }}
+                      >
+                        <SelectTrigger className="w-full" disabled={gameState.isGameActive}>
+                          <SelectValue placeholder="Seleccionar modo de juego" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {Object.entries(GAME_MODE_LABELS).map(([value, label]) => (
+                            <SelectItem key={value} value={value}>
+                              {label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </>
                 )}
 
@@ -443,16 +446,17 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
 
                 {/* Mensaje para jugadores que no son anfitrión */}
                 {!isHost && gameState.host && !gameState.isGameActive && !gameState.winner && (
-                  <p className="text-center text-muted-foreground p-2 bg-muted">
+                  <p className="text-center text-muted-foreground bg-muted py-2 rounded-md">
                     <span className="font-bold">{gameState.host || "Anfitrión"}</span> es el anfitrión. Esperando...
                   </p>
                 )}
 
                 {/* Mensaje de modo de juego */}
                 {!isHost && gameState.gameMode && (
-                  <div className="mt-2 p-2 bg-primary/50 border border-primary/20 text-center">
+                  <div className="bg-primary/10 border border-primary/20 text-center py-2 rounded-md">
                     <p className="text-sm">
-                      Modo: <span className="font-semibold">
+                      Modo:{" "}
+                      <span className="font-semibold">
                         {GAME_MODE_LABELS[gameState.gameMode] || gameState.gameMode}
                       </span>
                     </p>
@@ -476,8 +480,8 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
                     </>
                   )}
                 </Button>
-
               </div>
+
             </div>
           </div>
 
@@ -523,7 +527,7 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
               </div>
 
               {/* Botón dentro del recuadro: en md+ se posiciona absolute bottom-right (dentro del padding que añadimos) */}
-              <div className="hidden md:flex absolute right-0 bottom-0 z-20">
+              <div className="hidden md:flex absolute right-0 bottom-[-2px] z-20">
                 <Button
                   size="icon"
                   className="bg-[#D4165C] text-white hover:bg-[#AA124A] border-2 border-primary"
@@ -535,14 +539,14 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
               </div>
 
               {/* Botón debajo del tablero en móvil (1 columna) */}
-              <div className="mt-3 md:hidden flex justify-center">
+              <div className="mt-4 md:hidden flex justify-center">
                 <Button
                   size="sm"
                   className="bg-[#D4165C] text-white hover:bg-[#AA124A] border-2 border-primary"
                   onClick={() => { window.location.href = "/"; }}
                 >
                   <LogOut />
-                  
+
                 </Button>
               </div>
             </div>
@@ -559,7 +563,7 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
             gameMode={gameState.gameMode}
             onRestart={isHost ? resetGame : undefined}
           />
-          
+
           {/* Modal de inactividad */}
           <IdleModal
             open={showIdleModal}

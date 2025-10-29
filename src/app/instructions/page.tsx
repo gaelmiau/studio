@@ -55,7 +55,7 @@ export default function InstructionsPage() {
           {/* Título: Modos de juego */}
           <div className="shadow-md mb-6">
             <CardContent className="p-4 text-start bg-[#D4165C]/40">
-              <h2 className="text-[18px] font-bold pl-1">Modos de juego</h2>
+              <h2 className="text-[18px] font-semibold pl-1">Modos de juego</h2>
             </CardContent>
           </div>
 
@@ -77,7 +77,7 @@ export default function InstructionsPage() {
           {/* Título: Reglas del juego */}
           <div className="shadow-md  mb-6">
             <CardContent className="p-4 text-start bg-[#D4165C]/40">
-              <h2 className="text-[18px] font-bold pl-1">Reglas de juego</h2>
+              <h2 className="text-[18px] font-semibold pl-1">Reglas de juego</h2>
             </CardContent>
           </div>
 
