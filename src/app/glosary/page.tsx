@@ -15,19 +15,21 @@ export default function GlosaryPage() {
       {/* Encabezado (fuera del main) */}
       <Header />
 
-      <main className="flex min-h-screen flex-col bg-background text-foreground p-6">
-        <div className="mb-8 text-center">
-          <h1 className="text-[20px] font-bold flex items-center justify-center gap-2">
+      <main className="flex min-h-screen flex-col bg-background text-foreground p-12">
+
+        {/* Título e ícono */}
+        <div className="text-left justify-center sm:text-left pl-4">
+          <h1 className="text-[20px] font-bold flex items-center gap-2 justify-start">
             <BookOpen className="w-6 h-6" />
             Glosario de Cartas
           </h1>
-          <p className="text-muted-foreground mt-2 text-[18px] leading-relaxed">
+          <p className="text-muted-foreground mt-2 text-[18px]">
             Aquí encontrarás la descripción de cada carta de la lotería.
           </p>
         </div>
 
         {/* Botón volver (arriba) */}
-        <div className="mb-8 flex justify-center">
+        <div className="mb-8 flex items-right justify-end">
           <Button className="w-sm" onClick={() => router.push("/")}>
             Volver al inicio
           </Button>
@@ -63,7 +65,7 @@ export default function GlosaryPage() {
         </div>
 
         {/* Botón volver (abajo) */}
-        <div className="mt-8 flex justify-center">
+        <div className="mt-8 flex items-right justify-end">
           <Button className="w-sm" onClick={() => router.push("/")}>
             Volver al inicio
           </Button>
