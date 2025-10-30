@@ -1,16 +1,18 @@
 import { initializeApp } from "firebase/app";
 import { getDatabase } from "firebase/database";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
 
 // Tu configuración de Firebase
 const firebaseConfig = {
-  apiKey: "AIzaSyDv3AUt4U2fpb4cg96mMJB9P0TU0LfGfgw",
-  authDomain: "loteria-137c4.firebaseapp.com",
-  databaseURL: "https://loteria-137c4-default-rtdb.firebaseio.com",
-  projectId: "loteria-137c4",
-  storageBucket: "loteria-137c4.appspot.com",
-  messagingSenderId: "829551312056",
-  appId: "1:829551312056:web:eb054014ba6ee53c20884d",
-  measurementId: "G-FZQ3E4ZV3J"
+  apiKey: "AIzaSyD30LE9R9CDPN1Rltjs-h8jG8cr_37EzSo",
+  authDomain: "loteria100-4544e.firebaseapp.com",
+  databaseURL: "https://loteria100-4544e-default-rtdb.firebaseio.com",
+  projectId: "loteria100-4544e",
+  storageBucket: "loteria100-4544e.firebasestorage.app",
+  messagingSenderId: "970189710033",
+  appId: "1:970189710033:web:059ba41c496c0b94e95bf0",
+  measurementId: "G-K4Q1NT2WWY"
 };
 
 // Inicializa Firebase y la base de datos
