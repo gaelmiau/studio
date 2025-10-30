@@ -20,7 +20,7 @@ interface RoomFullModalProps {
   maxPlayers?: number;
 }
 
-export function RoomFullModal({ open, onClose, roomId, maxPlayers = 25 }: RoomFullModalProps) {
+export function RoomFullModal({ open, onClose, roomId, maxPlayers = 100 }: RoomFullModalProps) {
   const router = useRouter();
 
   return (
@@ -51,7 +51,7 @@ export function RoomFullModal({ open, onClose, roomId, maxPlayers = 25 }: RoomFu
           <AlertDialogDescription className="text-center text-sm text-muted-foreground mt-2">
             {`La sala ${roomId ? `"${roomId}" ` : ""}ha alcanzado el límite de ${maxPlayers} jugadores.`}
             <br />
-            Intenta nuevamente cuando alguien se desconecte o únete a otra sala.
+            Intenta nuevamente cuando alguien se desconecte.
           </AlertDialogDescription>
         </AlertDialogHeader>
 

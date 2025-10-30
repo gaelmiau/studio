@@ -26,21 +26,24 @@ const GAME_RULES = [
 export default function InstructionsPage() {
   const router = useRouter();
 
-    return (
-        <>
-            {/* Encabezado (fuera del main) */}
-            <Header />
-            <main className="flex min-h-screen flex-col bg-background text-foreground p-6">
+  return (
+    <>
+      <Header />
+      <main className="flex min-h-screen flex-col bg-background text-foreground p-12">
+        {/* Contenedor */}
+        <div className="">
+          {/* Título e ícono */}
+          <div className="text-left justify-center sm:text-left pl-4">
+            <h1 className="text-[20px] font-bold flex items-center gap-2 justify-start">
+              <img src="/LoteriaSI-InterfazIconoInstructivo.svg" alt="Instructivo Icon" className="h-6 w-6 inline-block mr-2" />
+              Instructivo del Juego
+            </h1>
+            <p className="text-muted-foreground mt-2 text-[18px]">
+              Aquí encontrarás los modos de juego y las instrucciones para jugar a la lotería.
+            </p>
+          </div>
 
-                <div className="mb-8 text-center">
-                    <h1 className="text-[20px] font-bold flex items-center justify-center gap-2">
-                        <img src="/LoteriaSI-InterfazIconoInstructivo.svg" alt="Instructivo Icon" className="h-6 w-6 inline-block mr-2" /> 
-                        Instructivo del Juego
-                    </h1>
-                    <p className="text-muted-foreground mt-2 text-[18px] leading-relaxed">
-                        Aquí encontrarás las instrucciones para jugar a la lotería.
-                    </p>
-                </div>
+
 
           {/* Botón volver (arriba) */}
           <div className="mb-8 flex items-right justify-end">
