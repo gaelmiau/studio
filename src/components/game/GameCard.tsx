@@ -31,8 +31,15 @@ export function GameCard({ card, isMarked, isClickable, onClick }: GameCardProps
       />
       {isMarked && (
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-primary/70 flex items-center justify-center text-primary-foreground font-bold text-3xl animate-in fade-in zoom-in">
-            <span>✓</span>
+          <div
+            className="
+              rounded-full bg-[#D4165C]/80 flex items-center justify-center text-white font-bold
+              animate-in fade-in zoom-in
+              w-12 h-12 md:w-12 md:h-12 sm:w-12 sm:h-12 lg:w-16 lg:h-16
+              aspect-square
+            "
+          >
+            <span className="text-[clamp(1rem,3vw,2rem)]">✓</span>
           </div>
         </div>
       )}
