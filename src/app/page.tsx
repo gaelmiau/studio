@@ -12,7 +12,8 @@ import { getRoom, setRoom, updateRoom } from "@/lib/firebaseRoom";
 import { generateBoard } from "@/lib/loteria";
 import { ref, onDisconnect } from "firebase/database";
 import { database } from "@/lib/firebase";
-import { RoomFullModal } from "@/components/game/RoomFullModal"; // <-- añadido
+import { RoomFullModal } from "@/components/game/RoomFullModal"; 
+import { NameExistsModal } from "@/components/game/NameExistsModal";
 
 // Función para limpiar el código de sala de caracteres prohibidos por Firebase
 function sanitizeRoomId(roomId: string) {
@@ -23,12 +24,17 @@ export default function Home() {
   const [name, setName] = useState("");
   const [room, setRoomState] = useState("");
   const [showRoomFullModal, setShowRoomFullModal] = useState(false);
+  const [showNameExistsModal, setShowNameExistsModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const MAX_PLAYERS = 25; // Límite de jugadores por sala
 
   const router = useRouter();
 
   const handleJoinRoom = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isLoading) return; // evita clics múltiples
+    setIsLoading(true);
+
     if (name.trim() && room.trim()) {
       if (/[.#$\[\]]/.test(room.trim())) {
         alert("El código de sala no puede contener los caracteres . # $ [ ]");
@@ -43,12 +49,14 @@ export default function Home() {
       const currentCount = Object.keys(playersObj).length;
       if (currentCount >= MAX_PLAYERS) {
         setShowRoomFullModal(true);
+        setIsLoading(false);
         return;
       }
 
       // valida nombre duplicado
       if (roomData && roomData.players && roomData.players[playerName]) {
-        alert("Ya existe un jugador con ese nombre en la sala. Elige otro.");
+        setShowNameExistsModal(true);
+        setIsLoading(false);
         return;
       }
 
@@ -180,6 +188,11 @@ export default function Home() {
         onClose={() => setShowRoomFullModal(false)}
         roomId={room}
         maxPlayers={MAX_PLAYERS}
+      />
+      {/* Modal de nombre existente */}
+      <NameExistsModal
+        open={showNameExistsModal}
+        onClose={() => setShowNameExistsModal(false)}
       />
     </div>
   );
