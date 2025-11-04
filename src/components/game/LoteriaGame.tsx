@@ -446,14 +446,14 @@ export function LoteriaGame({ roomId, playerName, roomData }: LoteriaGameProps) 
 
                 {/* Mensaje para jugadores que no son anfitrión */}
                 {!isHost && gameState.host && !gameState.isGameActive && !gameState.winner && (
-                  <p className="text-center text-muted-foreground bg-muted py-2 rounded-md">
+                  <p className="text-center text-muted-foreground bg-muted py-2">
                     <span className="font-bold">{gameState.host || "Anfitrión"}</span> es el anfitrión. Esperando...
                   </p>
                 )}
 
                 {/* Mensaje de modo de juego */}
                 {!isHost && gameState.gameMode && (
-                  <div className="bg-primary/10 border border-primary/20 text-center py-2 rounded-md">
+                  <div className="bg-primary/20 text-center py-2">
                     <p className="text-sm">
                       Modo:{" "}
                       <span className="font-semibold">
