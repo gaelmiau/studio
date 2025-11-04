@@ -33,13 +33,19 @@ export function GameCard({ card, isMarked, isClickable, onClick }: GameCardProps
         <div className="absolute inset-0 flex items-center justify-center">
           <div
             className="
-              rounded-full bg-[#D4165C]/80 flex items-center justify-center text-white font-bold
+              rounded-full bg-[#FBEEDF]/80 flex items-center justify-center text-white font-bold
               animate-in fade-in zoom-in
               w-12 h-12 md:w-12 md:h-12 sm:w-12 sm:h-12 lg:w-16 lg:h-16
               aspect-square
             "
           >
-            <span className="text-[clamp(1rem,3vw,2rem)]">✓</span>
+            <Image
+              src="/Lotería SI-frijolito-negro64x64.png"
+              alt="Frijolito"
+              width={64}
+              height={64}
+              className="object-contain w-full h-full"
+            />
           </div>
         </div>
       )}
