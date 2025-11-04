@@ -3,16 +3,16 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Header } from "@/components/Header";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { BookOpen, Gamepad2, ClipboardPen } from "lucide-react";
+import { BookOpen, Gamepad2, Loader2 } from "lucide-react";
 import { getRoom, setRoom, updateRoom } from "@/lib/firebaseRoom";
 import { generateBoard } from "@/lib/loteria";
 import { ref, onDisconnect } from "firebase/database";
 import { database } from "@/lib/firebase";
-import { RoomFullModal } from "@/components/game/RoomFullModal"; 
+import { RoomFullModal } from "@/components/game/RoomFullModal";
 import { NameExistsModal } from "@/components/game/NameExistsModal";
 
 // Función para limpiar el código de sala de caracteres prohibidos por Firebase
@@ -38,8 +38,10 @@ export default function Home() {
     if (name.trim() && room.trim()) {
       if (/[.#$\[\]]/.test(room.trim())) {
         alert("El código de sala no puede contener los caracteres . # $ [ ]");
+        setIsLoading(false);
         return;
       }
+
       const roomId = sanitizeRoomId(room.trim());
       const playerName = name.trim();
       const roomData = await getRoom(roomId);
@@ -82,7 +84,7 @@ export default function Home() {
         });
       } else {
         // Si existe, agrega el jugador con board y markedIndices
-        const newHost = roomData.gameState?.host || playerName; // 
+        const newHost = roomData.gameState?.host || playerName;
         await updateRoom(roomId, {
           players: {
             ...roomData.players,
@@ -102,6 +104,8 @@ export default function Home() {
 
       router.push(`/room/${roomId}?name=${encodeURIComponent(playerName)}`);
     }
+
+    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -109,7 +113,7 @@ export default function Home() {
     const playerName = name.trim();
     if (roomId && playerName) {
       const playerRef = ref(database, `rooms/${roomId}/players/${playerName}`);
-      // Elimina al jugador si se desconecta (funciona incluso si se apaga la compu)
+      // Elimina al jugador si se desconecta
       onDisconnect(playerRef).remove();
     }
   }, [room, name]);
@@ -122,7 +126,9 @@ export default function Home() {
           <Card className="border-2" style={{ borderColor: "hsl(180.85, 61.74%, 22.55%)" }}>
             <CardHeader className="text-center">
               <img src="/loteria.png" alt="Lotería Logo" className="h-140 w-360" />
-              <CardDescription className="pt-2 font-lato font-regular">Ingresa tu nombre y el código de la sala para jugar.</CardDescription>
+              <CardDescription className="pt-2 font-lato font-regular">
+                Ingresa tu nombre y el código de la sala para jugar.
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleJoinRoom} className="space-y-6">
@@ -148,48 +154,77 @@ export default function Home() {
                     className="text-base"
                   />
                 </div>
-                <Button type="submit" className="w-full" size="lg">
-                  <Gamepad2 className="mr-2" />
-                  Entrar a la sala
-                </Button>
 
+                {/* Botón con spinner de carga */}
+                <Button
+                  type="submit"
+                  className="w-full"
+                  size="lg"
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Cargando...
+                    </>
+                  ) : (
+                    <>
+                      <Gamepad2 className="mr-2" />
+                      Entrar a la sala
+                    </>
+                  )}
+                </Button>
               </form>
-              {/* Botón para Glosario, fuera del form para redirigirte */}
+
+              {/* Botón Glosario */}
               <div className="my-4 border-t border-muted">
-                <Button className="w-full" variant="outline" size="lg" onClick={() => router.push("/glosary")}>
+                <Button
+                  className="w-full"
+                  variant="outline"
+                  size="lg"
+                  onClick={() => router.push("/glosary")}
+                >
                   <BookOpen className="mr-2" />
                   Glosario de cartas
                 </Button>
               </div>
 
-              {/* Botón para Instructivo */}
+              {/* Botón Instructivo */}
               <div className="my-4 border-t border-muted">
-                <Button className="w-full" variant="outline" size="lg" onClick={() => router.push("/instructions")}>
-                  <img src="/LoteriaSI-InterfazIconoInstructivo.svg" alt="Instructivo Icon" className="h-4 w-4 inline-block mr-2" /> 
+                <Button
+                  className="w-full"
+                  variant="outline"
+                  size="lg"
+                  onClick={() => router.push("/instructions")}
+                >
+                  <img
+                    src="/LoteriaSI-InterfazIconoInstructivo.svg"
+                    alt="Instructivo Icon"
+                    className="h-4 w-4 inline-block mr-2"
+                  />
                   Instructivo del juego
                 </Button>
               </div>
-
             </CardContent>
           </Card>
         </div>
       </main>
 
-      {/* Footer fijo al final de la página */}
+      {/* Footer */}
       <footer className="text-center p-4 text-muted-foreground text-sm">
         <div className="flex items-center justify-center gap-2">
-          <img src="/icono-CDC.png" alt="Célula de Desarrollo" className="h-7 " />
+          <img src="/icono-CDC.png" alt="Célula de Desarrollo" className="h-7" />
           <p>Elaborado por Célula de Desarrollo de Contenidos DGTI Xalapa.</p>
         </div>
       </footer>
-      {/* Modal de sala llena */}
+
+      {/* Modales */}
       <RoomFullModal
         open={showRoomFullModal}
         onClose={() => setShowRoomFullModal(false)}
         roomId={room}
         maxPlayers={MAX_PLAYERS}
       />
-      {/* Modal de nombre existente */}
       <NameExistsModal
         open={showNameExistsModal}
         onClose={() => setShowNameExistsModal(false)}
