@@ -25,7 +25,7 @@ export function RoomFullModal({ open, onClose, roomId, maxPlayers = 25 }: RoomFu
 
   return (
     <AlertDialog open={open}>
-      <AlertDialogContent className="max-w-sm w-[90vw] pt-4 px-6 pb-6 relative">
+      <AlertDialogContent className="max-w-sm w-[90vw] pt-4 px-6 pb-6">
         {/* Close button inside recuadro (responsive) */}
         <AlertDialogCancel asChild>
           <button
