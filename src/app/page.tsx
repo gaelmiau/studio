@@ -137,7 +137,13 @@ export default function Home() {
                   <Input
                     id="name"
                     value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      e.target.setCustomValidity(""); // limpia el mensaje previo
+                      setName(e.target.value);
+                    }}
+                    onInvalid={(e: React.FormEvent<HTMLInputElement>) => {
+                      (e.target as HTMLInputElement).setCustomValidity("Por favor, ingresa un nombre.");
+                    }}
                     placeholder="Ej. El Valiente"
                     required
                     className="text-base"
@@ -148,7 +154,13 @@ export default function Home() {
                   <Input
                     id="room"
                     value={room}
-                    onChange={(e) => setRoomState(e.target.value.toUpperCase())}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      (e.target as HTMLInputElement).setCustomValidity("");
+                      setRoomState(e.target.value.toUpperCase());
+                    }}
+                    onInvalid={(e: React.FormEvent<HTMLInputElement>) => {
+                      (e.target as HTMLInputElement).setCustomValidity("Por favor, ingresa un código de sala válido.");
+                    }}
                     placeholder="Ej. JUEGO123"
                     required
                     className="text-base"
